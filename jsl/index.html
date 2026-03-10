@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr" style="background-color: #000000;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSL — Côme Nottaris</title>
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <link rel="stylesheet" href="../css/reset.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body class="page" id="jsl.head" style="background-color: #000000;">
+  <a href="../index.html" class="btn-accueil">ACCUEIL</a>
+
+  <div class="page-wrapper">
+  <div class="nav-bar">
+    <a class="nav-item nav-photos" href="../photos/">PHOTOGRAPHIE</a>
+    <a class="nav-item nav-journal active" href="../journalisme/">JOURNALISME</a>
+    <a class="nav-item nav-other" href="../autres/">AUTRES PROJETS</a>
+    <a class="nav-item nav-contact" href="../contact/">CONTACT</a>
+  </div>
+
+  <div class="page-content">
+    <h1>JSL</h1>
+    <p>Travaux et publications — documents PDF disponibles ci-dessous.</p>
+
+    <h2>Documents PDF</h2>
+    <ul class="pdf-list">
+      <!-- Les PDF seront ajoutés automatiquement par le script de scraping,
+           ou manuellement en ajoutant des <li> ici.
+           Exemple :
+           <li><a href="pdf/document.pdf" target="_blank">Nom du document</a></li>
+      -->
+      <li><em style="color:#888;">Les PDF seront disponibles après exécution du script de scraping
+      (<code>python tools/scrape_hotglue.py --page jsl</code>), ou vous pouvez les ajouter
+      manuellement dans le dossier <code>jsl/pdf/</code>.</em></li>
+    </ul>
+
+    <p>Pour ajouter un PDF manuellement :</p>
+    <ol>
+      <li>Placez le fichier dans <code>jsl/pdf/</code></li>
+      <li>Ajoutez une ligne dans la liste ci-dessus :
+        <code>&lt;li&gt;&lt;a href="pdf/votre-fichier.pdf"&gt;Titre&lt;/a&gt;&lt;/li&gt;</code></li>
+    </ol>
+
+  </div>
+  </div>
+</body>
+</html>

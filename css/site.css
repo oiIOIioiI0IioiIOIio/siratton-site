@@ -1,0 +1,285 @@
+/* site.css — Styles partagés pour siratton.site
+   Éditez ce fichier pour personnaliser l'apparence globale du site.
+   ---------------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* ── Variables de couleur ────────────────────────────────────────── */
+:root {
+  --color-bg:       #000;
+  --color-text:     #fff;
+  --color-accent:   #EB2828;
+  --color-accent2:  #84ADDC;
+  --color-banner:   #FFD682;
+  --color-nav-jour: #fff;
+  --color-nav-other:#D3D3D3;
+  --font-main:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                     Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ── Bouton Accueil (hérité de HotGlue) ─────────────────────────── */
+.btn-accueil {
+  display: inline-block;
+  background-color: var(--color-accent2);
+  color: #000;
+  font-size: 16px;
+  padding: 4px 10px;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: -0.05em;
+  line-height: 1.8;
+  position: fixed;
+  top: 8px;
+  left: 10px;
+  z-index: 1000;
+}
+.btn-accueil:hover { opacity: 0.85; }
+
+.btn-english {
+  display: inline-block;
+  background-color: #c30000;
+  color: #fff;
+  font-size: 14px;
+  padding: 4px 10px;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  line-height: 2;
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 1000;
+}
+.btn-english:hover { opacity: 0.85; }
+
+/* ── Layout principal ────────────────────────────────────────────── */
+.page-wrapper {
+  font-family: var(--font-main);
+  max-width: 1100px;
+  margin: 60px auto 40px;
+  padding: 0 20px;
+  color: var(--color-text);
+}
+
+/* ── Barre de navigation ─────────────────────────────────────────── */
+.nav-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.nav-item {
+  flex: 1 1 150px;
+  min-width: 120px;
+  text-align: center;
+  padding: 0.7rem 0;
+  border-radius: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+  color: inherit;
+}
+.nav-item:hover { transform: translateY(-2px); }
+.nav-photos  { background: var(--color-accent); color: #fff; }
+.nav-journal { background: var(--color-nav-jour); color: #000; border: 1px solid #ddd; }
+.nav-other   { background: var(--color-nav-other); color: #fff; border: 1px solid #555; }
+.nav-contact { background: var(--color-nav-other); color: #fff; border: 1px solid #555; }
+.nav-item.active { outline: 3px solid #FFD682; outline-offset: 2px; }
+
+/* ── Bannière ────────────────────────────────────────────────────── */
+.welcome {
+  background: var(--color-banner);
+  color: #000;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 1.5rem;
+  margin: 0.2rem;
+}
+
+/* ── Image responsive ────────────────────────────────────────────── */
+.image-wrapper {
+  width: 100%;
+  text-align: center;
+  margin: 2rem 0;
+}
+.image-wrapper img {
+  width: 90%;
+  max-width: 800px;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+/* ── Contenu de page ─────────────────────────────────────────────── */
+.page-content {
+  margin-top: 1.5rem;
+}
+.page-content h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-banner);
+}
+.page-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--color-accent2);
+}
+.page-content h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+.page-content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+.page-content a {
+  color: var(--color-accent2);
+  text-decoration: underline;
+}
+.page-content a:hover {
+  color: var(--color-banner);
+}
+.page-content ul, .page-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.page-content li {
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
+  list-style: disc;
+}
+
+/* ── Grille photo / articles ─────────────────────────────────────── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.card {
+  background: #111;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-4px); }
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 1rem;
+}
+.card-body h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.card-body p {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+/* ── Iframe container ────────────────────────────────────────────── */
+.iframe-container {
+  margin-top: 20px;
+  width: 100%;
+}
+.iframe-container iframe {
+  width: 100%;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+/* ── Timeline ────────────────────────────────────────────────────── */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+  margin: 2rem 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-accent2);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-left: 20px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -25px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.timeline-date {
+  font-size: 0.85rem;
+  color: var(--color-accent2);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+/* ── PDF list ────────────────────────────────────────────────────── */
+.pdf-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+.pdf-list li {
+  list-style: none;
+  margin-bottom: 0.75rem;
+}
+.pdf-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #1a1a1a;
+  border-radius: 0.5rem;
+  color: var(--color-accent2);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.pdf-list a:hover { background: #222; }
+.pdf-list a::before {
+  content: '📄';
+}
+
+/* ── Contact form styling ────────────────────────────────────────── */
+.contact-info {
+  background: #111;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 1.5rem 0;
+}
+.contact-info p {
+  font-size: 1.1rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .nav-bar { flex-direction: column; }
+  .nav-item { flex: 1 1 auto; font-size: 1.1rem; }
+  .welcome { font-size: 0.95rem; margin: 0 0.5rem; }
+  .image-wrapper img { width: 96%; }
+  .btn-english { position: static; display: block; margin: 10px auto; width: fit-content; }
+  .page-wrapper { margin-top: 45px; }
+  .page-content h1 { font-size: 1.5rem; }
+}

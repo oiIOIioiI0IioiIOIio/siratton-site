@@ -112,11 +112,11 @@ body {
 }
 .nav-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
 .nav-item:active { transform: translateY(0); }
-.nav-home    { background: var(--color-accent2); color: #000; }
-.nav-photos  { background: var(--color-accent); color: #fff; }
-.nav-journal { background: var(--color-nav-jour); color: #000; border: 1px solid #ddd; }
-.nav-other   { background: var(--color-nav-other); color: #000; border: 1px solid #555; }
-.nav-contact { background: var(--color-nav-other); color: #000; border: 1px solid #555; }
+a.nav-home    { background: var(--color-accent2); color: #000; }
+a.nav-photos  { background: var(--color-accent); color: #fff; }
+a.nav-journal { background: var(--color-nav-jour); color: #000; border: 1px solid #ddd; }
+a.nav-other   { background: var(--color-nav-other); color: #000; border: 1px solid #555; }
+a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px solid #555; }
 .nav-item.active { outline: 3px solid #FFD682; outline-offset: 2px; }
 
 /* ── Bannière ────────────────────────────────────────────────────── */

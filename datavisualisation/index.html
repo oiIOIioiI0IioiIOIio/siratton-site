@@ -98,6 +98,15 @@
     .tool-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
     .tool-fill { height: 100%; border-radius: 2px; width: 0; transition: width 0.8s ease; }
 
+    /* ── Panel embed ──────────────────────────────────────────── */
+    .panel-embed { margin: 1.2rem 0; border-radius: 0.5rem; overflow: hidden; }
+    .panel-embed iframe { display: block; width: 100%; border: none; border-radius: 0.5rem; }
+    .panel-embed-label {
+      font-size: 0.75rem; color: #666; text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+
     /* ── Tooltip ──────────────────────────────────────────────── */
     .d3-tooltip {
       position: absolute; pointer-events: none;
@@ -127,34 +136,6 @@
     <div style="height:50px;"></div>
     <div id="universe"></div>
     <p class="hint">Survolez les n&#339;uds &middot; Cliquez pour explorer &middot; Glissez pour r&eacute;organiser</p>
-
-    <h2>Carte Flourish &mdash; Basta!</h2>
-    <p>Carte interactive des mobilisations du 18 d&eacute;cembre &mdash; Journ&eacute;e internationale des migrants, &eacute;galit&eacute; des droits.</p>
-    <div class="iframe-container">
-      <iframe
-        src="https://flo.uri.sh/visualisation/26839293/embed"
-        width="100%"
-        height="600"
-        frameborder="0"
-        scrolling="no"
-        allowfullscreen
-        style="display:block; border-radius:0.5rem;">
-      </iframe>
-    </div>
-    <p>
-      <a href="https://basta.media/La-carte-des-mobilisations-18-decembre-egalite-des-droits-Journee-internationale-migrants" target="_blank">&#128240; Lire l&rsquo;article sur Basta! &rarr;</a>
-      &nbsp;&middot;&nbsp;
-      <a href="https://public.flourish.studio/visualisation/26839293/" target="_blank">&#128506;&#65039; Voir la carte en plein &eacute;cran &rarr;</a>
-    </p>
-
-    <h2>Timeline interactive &mdash; Setup.media</h2>
-    <p>Cr&eacute;ation d&rsquo;une timeline interactive via <strong>Flourish</strong> pour Setup.media &mdash; recherche,
-    structuration chronologique et mise en forme de donn&eacute;es pour une narration visuelle et interactive.</p>
-    <p><a href="https://stup.media/author/comenottaris/" target="_blank">&#128225; Voir les contributions sur Setup.media &rarr;</a></p>
-
-    <h2>Timeline interactive &mdash; Niger</h2>
-    <p>Timeline interactive sur le Niger, r&eacute;alis&eacute;e dans le cadre d&rsquo;un travail de data-journalisme.</p>
-    <p><a href="https://siratton.hotglue.me/?niger_timeline" target="_blank">&#128336; Voir la timeline Niger &rarr;</a></p>
   </div>
   </div>
 
@@ -184,7 +165,9 @@ var PROJECTS = [
     desc: 'R\u00e9alisation de la <strong>carte Flourish des mobilisations</strong> pour le m\u00e9dia ind\u00e9pendant Basta!. Travail d\u2019enqu\u00eate m\u00ealant collecte de donn\u00e9es, scraping, analyse approfondie et data-visualisation interactive \u2014 justice sociale, droits humains, \u00e9galit\u00e9 des droits.',
     tags: ['Flourish', 'Cartographie', 'Scraping', 'Enqu\u00eate'],
     tools: [{ name: 'Flourish', pct: 85, color: '#e06c75' }, { name: 'Python', pct: 85, color: '#4B8BBE' }, { name: 'Scraping', pct: 80, color: '#56b6c2' }],
-    links: [{ text: '\ud83d\udcf0 Articles Basta!', href: 'https://basta.media/come-nottaris', ext: true }, { text: '\ud83d\uddfa\ufe0f Carte Flourish', href: 'https://public.flourish.studio/visualisation/26839293/', ext: true }]
+    links: [{ text: '\ud83d\udcf0 Articles Basta!', href: 'https://basta.media/come-nottaris', ext: true }, { text: '\ud83d\uddfa\ufe0f Carte Flourish', href: 'https://public.flourish.studio/visualisation/26839293/', ext: true }],
+    embed: '<iframe src="https://flo.uri.sh/visualisation/26839293/embed" title="Carte interactive des mobilisations" width="100%" height="300" frameborder="0" scrolling="no" allowfullscreen style="display:block;border-radius:0.5rem;"></iframe>',
+    embedLabel: 'Carte interactive des mobilisations'
   },
   {
     id: 'stup', label: 'Setup', subtitle: 'Setup.media',
@@ -209,6 +192,14 @@ var PROJECTS = [
     tags: ['Scraping', 'Notion', 'V\u00e9rification', 'Base de donn\u00e9es'],
     tools: [{ name: 'Notion', pct: 90, color: '#fff' }, { name: 'Scraping', pct: 80, color: '#56b6c2' }, { name: 'Python', pct: 75, color: '#4B8BBE' }],
     links: [{ text: '\u2696\ufe0f Voir le projet', href: '../fea/' }]
+  },
+  {
+    id: 'niger', label: 'Niger', subtitle: 'Timeline interactive',
+    icon: '\ud83c\uddf3\ud83c\uddea', color: '#f5a623', r: 28,
+    desc: '<strong>Timeline interactive sur le Niger</strong>, r\u00e9alis\u00e9e dans le cadre d\u2019un travail de data-journalisme. Recherche, structuration chronologique et mise en forme de donn\u00e9es.',
+    tags: ['Timeline', 'Data-journalisme', 'Flourish'],
+    tools: [{ name: 'Flourish', pct: 85, color: '#e06c75' }],
+    links: [{ text: '\ud83d\udd70\ufe0f Voir la timeline Niger', href: 'https://siratton.hotglue.me/?niger_timeline', ext: true }]
   }
 ];
 
@@ -233,7 +224,8 @@ var PROJ_SKILL_LINKS = [
   { source: 'stup', target: 'flourish' },
   { source: 'auto', target: 'htmlcss' }, { source: 'auto', target: 'python' },
   { source: 'auto', target: 'supabase' }, { source: 'auto', target: 'git' },
-  { source: 'fea', target: 'scraping' }, { source: 'fea', target: 'python' }
+  { source: 'fea', target: 'scraping' }, { source: 'fea', target: 'python' },
+  { source: 'niger', target: 'flourish' }
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -283,6 +275,7 @@ function openProject(proj) {
     '<div class="panel-subtitle">' + proj.subtitle + '</div>' +
     '<div class="panel-tags">' + tagsHTML + '</div>' +
     '<div class="panel-desc">' + proj.desc + '</div>' +
+    (proj.embed ? '<div class="panel-embed">' + (proj.embedLabel ? '<div class="panel-embed-label">' + proj.embedLabel + '</div>' : '') + proj.embed + '</div>' : '') +
     '<div style="display:flex;flex-wrap:wrap;">' + linksHTML + '</div>' +
     toolsHTML;
 

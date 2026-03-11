@@ -26,6 +26,7 @@ siratton-site/
 ├── autres/index.html       ← Autres projets
 ├── automediatheque/index.html ← Automédiathèque
 ├── fea/index.html          ← Fait Entrer l'Accusé
+├── datavisualisation/index.html ← Data-visualisation D3.js
 │
 ├── contact/index.html      ← Contact
 │
@@ -135,6 +136,7 @@ Le script :
 | Autres projets | `/?autres` | ✅ Créé |
 | Contact | `/?contact` | ✅ Créé |
 | FEA | `/?fea` | ✅ Migré |
+| Data-visualisation | — | ✅ Créé (D3.js) |
 | Automédiathèque | `/?automediatheque` | ✅ Créé |
 | Cieza | `/?Cieza` | ✅ Créé |
 | JSL | `/?JSL` | ✅ Créé (PDFs à ajouter) |

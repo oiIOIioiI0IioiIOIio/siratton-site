@@ -98,6 +98,15 @@
     .tool-track { flex: 1; height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
     .tool-fill { height: 100%; border-radius: 2px; width: 0; transition: width 0.8s ease; }
 
+    /* ── Panel embed ──────────────────────────────────────────── */
+    .panel-embed { margin: 1.2rem 0; border-radius: 0.5rem; overflow: hidden; }
+    .panel-embed iframe { display: block; width: 100%; border: none; border-radius: 0.5rem; }
+    .panel-embed-label {
+      font-size: 0.75rem; color: #666; text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+
     /* ── Tooltip ──────────────────────────────────────────────── */
     .d3-tooltip {
       position: absolute; pointer-events: none;
@@ -125,13 +134,6 @@
   <div class="page-wrapper">
   <div class="page-content">
     <div style="height:50px;"></div>
-    <p style="color:#aaa; line-height:1.7; max-width:680px;">
-      Bienvenue dans mon univers de <strong style="color:#fff;">data-visualisation</strong>.
-      Explorez mes projets en naviguant dans cette constellation interactive &mdash;
-      chaque n&#339;ud repr&eacute;sente un projet ou une comp&eacute;tence.
-      <strong style="color:#84ADDC;">Cliquez sur un projet pour l&rsquo;explorer.</strong>
-    </p>
-
     <div id="universe"></div>
     <p class="hint">Survolez les n&#339;uds &middot; Cliquez pour explorer &middot; Glissez pour r&eacute;organiser</p>
   </div>
@@ -152,67 +154,78 @@ var PROJECTS = [
   {
     id: 'rsf', label: 'RSF', subtitle: 'Libert\u00e9 de la presse',
     icon: '\ud83d\udcca', color: '#c30000', r: 38,
-    desc: 'Contribution au <strong>Bilan 2024 de Reporters Sans Fronti\u00e8res</strong> en tant que data-journaliste stagiaire, aux c\u00f4t\u00e9s de Blanche Mar\u00e8s et de l\u2019\u00e9quipe RSF. Collecte, nettoyage et analyse des donn\u00e9es mondiales sur la libert\u00e9 de la presse \u2014 180 pays \u00e9valu\u00e9s, cartographies, visualisations.',
-    tags: ['Data-journalisme', 'Python', 'Analyse', 'Cartographie'],
-    tools: [{ name: 'Python', pct: 90, color: '#4B8BBE' }, { name: 'Excel', pct: 80, color: '#217346' }, { name: 'QGIS', pct: 70, color: '#93b023' }, { name: 'R', pct: 60, color: '#276DC3' }],
+    desc: 'Cr\u00e9ation de <strong>cartes et visuels interactifs via Flourish</strong> pour Reporters Sans Fronti\u00e8res. Traitement et analyse des donn\u00e9es de classement mondial de la libert\u00e9 de la presse \u2014 180 pays \u00e9valu\u00e9s. Cartographies, nettoyage de donn\u00e9es et data-visualisations pour le Bilan 2024.',
+    tags: ['Flourish', 'Cartographie', 'Traitement de donn\u00e9es', 'Data-viz'],
+    tools: [{ name: 'Flourish', pct: 85, color: '#e06c75' }, { name: 'Python', pct: 90, color: '#4B8BBE' }, { name: 'QGIS', pct: 70, color: '#93b023' }, { name: 'R', pct: 60, color: '#276DC3' }],
     links: [{ text: '\ud83d\udcc4 Projet RSF', href: '../rsf/' }, { text: '\ud83d\udce5 Bilan 2024 PDF', href: 'https://rsf.org/sites/default/files/medias/file/2024/12/Bilan%20RSF%202024%20FR.pdf', ext: true }]
   },
   {
     id: 'basta', label: 'Basta!', subtitle: 'Enqu\u00eates & data',
     icon: '\u270d\ufe0f', color: '#EB2828', r: 34,
-    desc: 'Articles publi\u00e9s sur <strong>Basta!</strong>, m\u00e9dia ind\u00e9pendant couvrant les questions sociales et \u00e9cologiques. Travail d\u2019enqu\u00eate m\u00ealant collecte de donn\u00e9es, interviews, scraping et analyse approfondie \u2014 justice sociale, antifascisme, \u00e9cologie, droits humains.',
-    tags: ['Enqu\u00eate', 'Data-journalisme', 'Justice sociale', 'Antifascisme'],
-    tools: [{ name: 'Python', pct: 85, color: '#4B8BBE' }, { name: 'Flourish', pct: 75, color: '#e06c75' }, { name: 'Scraping', pct: 80, color: '#56b6c2' }],
-    links: [{ text: '\ud83d\udcf0 Articles Basta!', href: 'https://basta.media/come-nottaris', ext: true }]
+    desc: 'R\u00e9alisation de la <strong>carte Flourish des mobilisations</strong> pour le m\u00e9dia ind\u00e9pendant Basta!. Travail d\u2019enqu\u00eate m\u00ealant collecte de donn\u00e9es, scraping, analyse approfondie et data-visualisation interactive \u2014 justice sociale, droits humains, \u00e9galit\u00e9 des droits.',
+    tags: ['Flourish', 'Cartographie', 'Scraping', 'Enqu\u00eate'],
+    tools: [{ name: 'Flourish', pct: 85, color: '#e06c75' }, { name: 'Python', pct: 85, color: '#4B8BBE' }, { name: 'Scraping', pct: 80, color: '#56b6c2' }],
+    links: [{ text: '\ud83d\udcf0 Articles Basta!', href: 'https://basta.media/come-nottaris', ext: true }, { text: '\ud83d\uddfa\ufe0f Carte Flourish', href: 'https://public.flourish.studio/visualisation/26839293/', ext: true }],
+    embed: '<iframe src="https://flo.uri.sh/visualisation/26839293/embed" title="Carte interactive des mobilisations" width="100%" height="300" frameborder="0" scrolling="no" allowfullscreen style="display:block;border-radius:0.5rem;"></iframe>',
+    embedLabel: 'Carte interactive des mobilisations'
   },
   {
-    id: 'stup', label: 'STUP', subtitle: 'STUP.MEDIA',
+    id: 'stup', label: 'Setup', subtitle: 'Setup.media',
     icon: '\ud83d\udce1', color: '#FFD682', r: 30,
-    desc: 'Contributions au m\u00e9dia <strong>STUP.MEDIA</strong> \u2014 enqu\u00eates, reportages et analyses sur des sujets de soci\u00e9t\u00e9. Approche data-journalistique appliqu\u00e9e \u00e0 des investigations de terrain.',
-    tags: ['Journalisme', 'R\u00e9daction', 'Enqu\u00eate', 'Reportage'],
-    tools: [{ name: 'Flourish', pct: 80, color: '#e06c75' }, { name: 'Datawrapper', pct: 70, color: '#84ADDC' }],
-    links: [{ text: '\ud83d\udcf0 Articles STUP', href: 'https://stup.media/author/comenottaris/', ext: true }]
+    desc: 'Cr\u00e9ation d\u2019une <strong>timeline interactive via Flourish</strong> pour Setup.media. Recherche, structuration chronologique et mise en forme de donn\u00e9es pour une narration visuelle et interactive.',
+    tags: ['Flourish', 'Timeline', 'Data-viz', 'Journalisme'],
+    tools: [{ name: 'Flourish', pct: 90, color: '#e06c75' }, { name: 'Datawrapper', pct: 70, color: '#84ADDC' }],
+    links: [{ text: '\ud83d\udcf0 Setup.media', href: 'https://stup.media/author/comenottaris/', ext: true }]
   },
   {
-    id: 'auto', label: 'Autom\u00e9dia-\nth\u00e8que', subtitle: 'Base open-source',
+    id: 'auto', label: 'Autom\u00e9dia-\nth\u00e8que', subtitle: 'Site Supabase',
     icon: '\ud83d\uddc2\ufe0f', color: '#6dd47e', r: 32,
-    desc: 'Projet de <strong>base de donn\u00e9es collaborative et open-source</strong> recensant les autom\u00e9dias francophones. D\u00e9veloppement web complet, collecte de donn\u00e9es, cat\u00e9gorisation, et publication sur GitHub.',
-    tags: ['Open data', 'Open source', 'Autom\u00e9dias', 'Dev web'],
-    tools: [{ name: 'HTML/CSS', pct: 90, color: '#e06c75' }, { name: 'Python', pct: 75, color: '#4B8BBE' }, { name: 'Scraping', pct: 85, color: '#56b6c2' }, { name: 'Git', pct: 80, color: '#6dd47e' }],
+    desc: 'Construction d\u2019un <strong>site web de A \u00e0 Z avec Supabase</strong> pour l\u2019Autom\u00e9diath\u00e8que. Base de donn\u00e9es collaborative, gestion de l\u2019ajout de nouvelles entr\u00e9es par n\u2019importe qui via un formulaire/questionnaire int\u00e9gr\u00e9. D\u00e9veloppement full-stack et publication open-source.',
+    tags: ['Supabase', 'Full-stack', 'Open source', 'Formulaire'],
+    tools: [{ name: 'Supabase', pct: 85, color: '#3ecf8e' }, { name: 'HTML/CSS', pct: 90, color: '#e06c75' }, { name: 'Python', pct: 75, color: '#4B8BBE' }, { name: 'Git', pct: 80, color: '#6dd47e' }],
     links: [{ text: '\ud83d\uddc2\ufe0f Projet', href: '../automediatheque/' }, { text: '\ud83c\udf10 Site', href: 'https://automediatheque.linkpc.net/', ext: true }, { text: '\ud83d\udcbb GitHub', href: 'https://github.com/comenottaris/AUTOMEDIATHEQUE', ext: true }]
   },
   {
-    id: 'fea', label: 'FEA', subtitle: 'Fait Entrer l\u2019Accus\u00e9',
+    id: 'fea', label: 'FEA', subtitle: 'Base de donn\u00e9es',
     icon: '\u2696\ufe0f', color: '#c792ea', r: 28,
-    desc: 'Projet collaboratif de <strong>base de donn\u00e9es</strong> autour de l\u2019\u00e9mission \u00ab Fait Entrer l\u2019Accus\u00e9 \u00bb. Organisation, cat\u00e9gorisation et mise en forme de donn\u00e9es structur\u00e9es via Notion.',
-    tags: ['Base de donn\u00e9es', 'Notion', 'Collaboratif', 'Organisation'],
-    tools: [{ name: 'Notion', pct: 90, color: '#fff' }, { name: 'Donn\u00e9es', pct: 75, color: '#c792ea' }],
+    desc: '<strong>Scraping et v\u00e9rification des donn\u00e9es</strong> sur les agresseurs trait\u00e9s dans l\u2019\u00e9mission \u00ab\u00a0Fait Entrer l\u2019Accus\u00e9\u00a0\u00bb. Construction de la <strong>base de donn\u00e9es Notion</strong> et du questionnaire collaboratif pour la collecte structur\u00e9e d\u2019informations.',
+    tags: ['Scraping', 'Notion', 'V\u00e9rification', 'Base de donn\u00e9es'],
+    tools: [{ name: 'Notion', pct: 90, color: '#fff' }, { name: 'Scraping', pct: 80, color: '#56b6c2' }, { name: 'Python', pct: 75, color: '#4B8BBE' }],
     links: [{ text: '\u2696\ufe0f Voir le projet', href: '../fea/' }]
+  },
+  {
+    id: 'niger', label: 'Niger', subtitle: 'Timeline interactive',
+    icon: '\ud83c\uddf3\ud83c\uddea', color: '#f5a623', r: 28,
+    desc: '<strong>Timeline interactive sur le Niger</strong>, r\u00e9alis\u00e9e dans le cadre d\u2019un travail de data-journalisme. Recherche, structuration chronologique et mise en forme de donn\u00e9es.',
+    tags: ['Timeline', 'Data-journalisme', 'Flourish'],
+    tools: [{ name: 'Flourish', pct: 85, color: '#e06c75' }],
+    links: [{ text: '\ud83d\udd70\ufe0f Voir la timeline Niger', href: 'https://siratton.hotglue.me/?niger_timeline', ext: true }]
   }
 ];
 
 var SKILLS = [
   { id: 'python', label: 'Python', color: '#4B8BBE', r: 16 },
   { id: 'd3js', label: 'D3.js', color: '#f9a03c', r: 16 },
-  { id: 'flourish', label: 'Flourish', color: '#e06c75', r: 13 },
+  { id: 'flourish', label: 'Flourish', color: '#e06c75', r: 14 },
   { id: 'qgis', label: 'QGIS', color: '#93b023', r: 12 },
   { id: 'r_lang', label: 'R', color: '#276DC3', r: 12 },
-  { id: 'scraping', label: 'Scraping', color: '#56b6c2', r: 13 },
+  { id: 'scraping', label: 'Scraping', color: '#56b6c2', r: 14 },
   { id: 'sql', label: 'SQL', color: '#FFD682', r: 11 },
-  { id: 'datawrapper', label: 'Datawrap.', color: '#84ADDC', r: 11 },
+  { id: 'supabase', label: 'Supabase', color: '#3ecf8e', r: 13 },
   { id: 'git', label: 'Git', color: '#6dd47e', r: 11 },
   { id: 'htmlcss', label: 'HTML/CSS', color: '#e06c75', r: 12 }
 ];
 
 var PROJ_SKILL_LINKS = [
   { source: 'rsf', target: 'python' }, { source: 'rsf', target: 'qgis' },
-  { source: 'rsf', target: 'r_lang' }, { source: 'rsf', target: 'd3js' },
+  { source: 'rsf', target: 'r_lang' }, { source: 'rsf', target: 'flourish' },
   { source: 'basta', target: 'python' }, { source: 'basta', target: 'scraping' },
   { source: 'basta', target: 'flourish' },
-  { source: 'stup', target: 'flourish' }, { source: 'stup', target: 'datawrapper' },
+  { source: 'stup', target: 'flourish' },
   { source: 'auto', target: 'htmlcss' }, { source: 'auto', target: 'python' },
-  { source: 'auto', target: 'scraping' }, { source: 'auto', target: 'git' },
-  { source: 'fea', target: 'sql' }
+  { source: 'auto', target: 'supabase' }, { source: 'auto', target: 'git' },
+  { source: 'fea', target: 'scraping' }, { source: 'fea', target: 'python' },
+  { source: 'niger', target: 'flourish' }
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -262,6 +275,7 @@ function openProject(proj) {
     '<div class="panel-subtitle">' + proj.subtitle + '</div>' +
     '<div class="panel-tags">' + tagsHTML + '</div>' +
     '<div class="panel-desc">' + proj.desc + '</div>' +
+    (proj.embed ? '<div class="panel-embed">' + (proj.embedLabel ? '<div class="panel-embed-label">' + proj.embedLabel + '</div>' : '') + proj.embed + '</div>' : '') +
     '<div style="display:flex;flex-wrap:wrap;">' + linksHTML + '</div>' +
     toolsHTML;
 

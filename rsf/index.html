@@ -8,6 +8,87 @@
   <link rel="stylesheet" href="../css/reset.min.css">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/site.css">
+  <style>
+    .dataviz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .dataviz-bubble {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 0.75rem;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      text-align: center;
+    }
+    .dataviz-bubble:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border-color: #84ADDC;
+    }
+    .dataviz-bubble h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+    .dataviz-bubble p {
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .dataviz-embed-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .dataviz-embed-overlay.active {
+      display: flex;
+    }
+    .dataviz-embed-inner {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      background: #111;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+    .dataviz-embed-inner iframe {
+      display: block;
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .dataviz-embed-close {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #555;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: border-color 0.2s;
+    }
+    .dataviz-embed-close:hover { border-color: #84ADDC; }
+    @media (max-width: 560px) {
+      .dataviz-embed-overlay { padding: 1rem; }
+      .dataviz-embed-inner iframe { height: 400px; }
+    }
+  </style>
 </head>
 <body class="page" id="rsf.head" style="background-color: #000000;">
   <a href="../index.html" class="btn-accueil">ACCUEIL</a>
@@ -22,9 +103,33 @@
     <p>Création de cartes et visualisations interactives via <strong>Flourish</strong> pour le Bilan 2024 de RSF.
     Traitement des données de classement mondial de la liberté de la presse — 180 pays évalués,
     nettoyage de données, cartographies et data-visualisations.</p>
-    <p><a href="https://siratton.hotglue.me/?RSF" target="_blank">
-      🗺️ Voir les cartes et visuels sur la page dédiée →
-    </a></p>
+
+    <div class="dataviz-grid">
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/22640591/embed">
+        <h3>📊 Visualisation 1</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/21552065/embed">
+        <h3>📊 Visualisation 2</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/22441227/embed">
+        <h3>📊 Visualisation 3</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/22670022/embed">
+        <h3>📊 Visualisation 4</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/20471918/embed">
+        <h3>📊 Visualisation 5</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+      <div class="dataviz-bubble" data-embed="https://flo.uri.sh/visualisation/22399385/embed">
+        <h3>📊 Visualisation 6</h3>
+        <p>Cliquez pour afficher</p>
+      </div>
+    </div>
 
     <h2>Bilan 2024</h2>
     <p>Participation à l'élaboration du <strong>Bilan 2024 de RSF</strong> sur la liberté
@@ -47,5 +152,42 @@
 
   </div>
   </div>
+
+  <!-- Overlay for embed display -->
+  <div class="dataviz-embed-overlay" id="embed-overlay">
+    <div class="dataviz-embed-inner">
+      <button class="dataviz-embed-close" id="embed-close">&#10005;</button>
+      <iframe id="embed-iframe" src="" allowfullscreen scrolling="no"></iframe>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    var overlay = document.getElementById('embed-overlay');
+    var iframe = document.getElementById('embed-iframe');
+    var closeBtn = document.getElementById('embed-close');
+
+    document.querySelectorAll('.dataviz-bubble').forEach(function(bubble) {
+      bubble.addEventListener('click', function() {
+        var src = this.getAttribute('data-embed');
+        iframe.src = src;
+        overlay.classList.add('active');
+      });
+    });
+
+    function closeOverlay() {
+      overlay.classList.remove('active');
+      iframe.src = '';
+    }
+
+    closeBtn.addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeOverlay();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeOverlay();
+    });
+  })();
+  </script>
 </body>
 </html>

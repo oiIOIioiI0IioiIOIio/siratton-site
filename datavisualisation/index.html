@@ -258,7 +258,7 @@ function openProject(proj) {
 
   panelContent.innerHTML =
     '<div class="panel-icon">' + proj.icon + '</div>' +
-    '<div class="panel-title">' + proj.label.replace('\n', ' ') + '</div>' +
+    '<div class="panel-title">' + proj.label.replace(/\n/g, ' ') + '</div>' +
     '<div class="panel-subtitle">' + proj.subtitle + '</div>' +
     '<div class="panel-tags">' + tagsHTML + '</div>' +
     '<div class="panel-desc">' + proj.desc + '</div>' +
@@ -476,7 +476,7 @@ function openProject(proj) {
       });
 
     var tip = d.isProject
-      ? '<div class="tt-title">' + d.label.replace('\n',' ') + '</div><div class="tt-sub">' + d.subtitle + '</div><div style="margin-top:4px;color:#666;">Cliquez pour explorer \u2192</div>'
+      ? '<div class="tt-title">' + d.label.replace(/\n/g,' ') + '</div><div class="tt-sub">' + d.subtitle + '</div><div style="margin-top:4px;color:#666;">Cliquez pour explorer \u2192</div>'
       : '<div class="tt-title">' + d.label + '</div><div class="tt-sub">Comp\u00e9tence</div>';
     showTip(evt, tip);
   })
@@ -541,10 +541,11 @@ function openProject(proj) {
   }
 
   /* Start particles when visible */
+  var particleInterval = null;
   var partObs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        setInterval(emitParticle, 300);
+      if (e.isIntersecting && !particleInterval) {
+        particleInterval = setInterval(emitParticle, 300);
         partObs.disconnect();
       }
     });

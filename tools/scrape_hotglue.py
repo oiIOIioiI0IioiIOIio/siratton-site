@@ -12,9 +12,8 @@ Méthode principale : Selenium (Chrome headless) pour récupérer le HTML
 Méthode de secours : requests + BeautifulSoup si Selenium échoue.
 
 Pages scrapées (via siratton.hotglue.me/?pagename) :
-  home, Agenda, Cieza, JSL, RSF, automediatheque, autres, contact, fea,
-  home-EN, journalisme, journalisme-EN, niger, niger_analyse,
-  niger_analyse_raw, niger_timeline, photos, photos-EN
+  home, Cieza, JSL, RSF, automediatheque, autres, contact, fea,
+  home-EN, journalisme, journalisme-EN, photos, photos-EN
 
   ⚠ "home try 2" est ignoré (brouillon).
 
@@ -77,7 +76,6 @@ URL_BASE = "https://siratton.hotglue.me/"
 # "home" est un cas spécial : il produit index.html à la racine.
 PAGES = {
     "home":               ".",
-    "Agenda":             "agenda",
     "Cieza":              "cieza",
     "JSL":                "jsl",
     "RSF":                "rsf",
@@ -88,10 +86,6 @@ PAGES = {
     "home-EN":            "home-en",
     "journalisme":        "journalisme",
     "journalisme-EN":     "journalisme-en",
-    "niger":              "niger",
-    "niger_analyse":      "niger_analyse",
-    "niger_analyse_raw":  "niger_analyse_raw",
-    "niger_timeline":     "niger_timeline",
     "photos":             "photos",
     "photos-EN":          "photos-en",
 }
@@ -883,9 +877,8 @@ Exemples :
   python tools/scrape_hotglue.py --output-dir build # Sortie dans ./build/
 
 Pages disponibles :
-  home, Agenda, Cieza, JSL, RSF, automediatheque, autres, contact,
-  fea, home-EN, journalisme, journalisme-EN, niger, niger_analyse,
-  niger_analyse_raw, niger_timeline, photos, photos-EN
+  home, Cieza, JSL, RSF, automediatheque, autres, contact,
+  fea, home-EN, journalisme, journalisme-EN, photos, photos-EN
         """,
     )
 

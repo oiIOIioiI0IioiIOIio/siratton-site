@@ -111,10 +111,21 @@
 <script>
 (function() {
   var FLICKR_USER_ID = '197713351@N07';
-  var FLICKR_API_KEY = '54b108396d86aboree43ee3a6e39b01a';
+  /* Replace with your Flickr API key from https://www.flickr.com/services/api/keys/ */
+  var FLICKR_API_KEY = '';
   var container = document.getElementById('flickr-albums');
 
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function loadAlbums() {
+    if (!FLICKR_API_KEY) {
+      container.innerHTML = '<p class="flickr-loading">Chargement des albums depuis Flickr…</p>' +
+        '<p style="text-align:center;"><a href="https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/" target="_blank">Voir les albums directement sur Flickr →</a></p>';
+      return;
+    }
+
     var script = document.createElement('script');
     var cbName = 'flickrAlbumsCallback_' + Date.now();
 
@@ -142,9 +153,9 @@
         var albumUrl = 'https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/' + album.id;
 
         html += '<div class="flickr-album-card">' +
-          '<a href="' + albumUrl + '" target="_blank" rel="noopener">' +
-          '<img src="' + imgUrl + '" alt="' + title.replace(/"/g, '&quot;') + '" loading="lazy">' +
-          '<div class="flickr-album-title">' + title.replace(/</g, '&lt;') + '</div>' +
+          '<a href="' + escapeHtml(albumUrl) + '" target="_blank" rel="noopener">' +
+          '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(title) + '" loading="lazy">' +
+          '<div class="flickr-album-title">' + escapeHtml(title) + '</div>' +
           '<div class="flickr-album-count">' + photoCount + ' photo' + (photoCount > 1 ? 's' : '') + '</div>' +
           '</a></div>';
       }

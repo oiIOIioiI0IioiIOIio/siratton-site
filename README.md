@@ -23,15 +23,10 @@ siratton-site/
 ├── jsl/pdf/                ← PDFs du projet JSL
 ├── rsf/index.html          ← RSF — Reporters Sans Frontières
 │
-├── niger/index.html        ← Projet Niger
-├── niger_analyse/index.html    ← Niger — Analyse
-├── niger_analyse_raw/index.html ← Niger — Données brutes
-├── niger_timeline/index.html   ← Niger — Chronologie
-│
 ├── autres/index.html       ← Autres projets
 ├── automediatheque/index.html ← Automédiathèque
 ├── fea/index.html          ← Fait Entrer l'Accusé
-├── agenda/index.html       ← Agenda / Événements
+├── datavisualisation/index.html ← Data-visualisation D3.js
 │
 ├── contact/index.html      ← Contact
 │
@@ -141,15 +136,11 @@ Le script :
 | Autres projets | `/?autres` | ✅ Créé |
 | Contact | `/?contact` | ✅ Créé |
 | FEA | `/?fea` | ✅ Migré |
+| Data-visualisation | — | ✅ Créé (D3.js) |
 | Automédiathèque | `/?automediatheque` | ✅ Créé |
-| Agenda | `/?Agenda` | ✅ Créé |
 | Cieza | `/?Cieza` | ✅ Créé |
 | JSL | `/?JSL` | ✅ Créé (PDFs à ajouter) |
 | RSF | `/?RSF` | ✅ Créé |
-| Niger | `/?niger` | ✅ Créé |
-| Niger Analyse | `/?niger_analyse` | ✅ Créé |
-| Niger Données brutes | `/?niger_analyse_raw` | ✅ Créé |
-| Niger Chronologie | `/?niger_timeline` | ✅ Créé |
 
 > **Note** : `home try 2` a été ignoré (brouillon).
 

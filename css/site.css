@@ -346,6 +346,8 @@ button:focus-visible {
     min-height: 40px;
     top: 8px;
     left: 8px;
+    transform: scale(0.6);
+    transform-origin: top left;
   }
   .btn-english {
     position: fixed;
@@ -354,6 +356,8 @@ button:focus-visible {
     min-height: 40px;
     top: 8px;
     right: 8px;
+    transform: scale(0.6);
+    transform-origin: top right;
   }
   .page-wrapper {
     margin: 60px auto 30px;
@@ -416,10 +420,14 @@ button:focus-visible {
   .btn-accueil {
     font-size: 12px;
     padding: 4px 8px;
+    transform: scale(0.6);
+    transform-origin: top left;
   }
   .btn-english {
     font-size: 11px;
     padding: 4px 8px;
+    transform: scale(0.6);
+    transform-origin: top right;
   }
   .page-wrapper {
     padding: 0 10px;

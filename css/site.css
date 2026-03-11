@@ -112,6 +112,7 @@ body {
 }
 .nav-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
 .nav-item:active { transform: translateY(0); }
+.nav-home    { background: var(--color-accent2); color: #000; }
 .nav-photos  { background: var(--color-accent); color: #fff; }
 .nav-journal { background: var(--color-nav-jour); color: #000; border: 1px solid #ddd; }
 .nav-other   { background: var(--color-nav-other); color: #fff; border: 1px solid #555; }

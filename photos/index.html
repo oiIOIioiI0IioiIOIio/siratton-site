@@ -8,72 +8,6 @@
   <link rel="stylesheet" href="../css/reset.min.css">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/site.css">
-  <style>
-    .flickr-albums-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.2rem;
-      margin: 1.5rem 0;
-    }
-    .flickr-album-card {
-      background: #111;
-      border-radius: 0.75rem;
-      overflow: hidden;
-      border: 1px solid #222;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .flickr-album-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    .flickr-album-card a {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .flickr-album-card img {
-      width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      display: block;
-    }
-    .flickr-album-title {
-      padding: 0.75rem 0.85rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.4;
-    }
-    .flickr-album-count {
-      padding: 0 0.85rem 0.75rem;
-      font-size: 0.75rem;
-      color: #888;
-    }
-    .flickr-loading {
-      text-align: center;
-      color: #666;
-      padding: 2rem 0;
-      font-style: italic;
-    }
-    .flickr-error {
-      text-align: center;
-      color: #c30000;
-      padding: 1rem 0;
-    }
-    @media (max-width: 768px) {
-      .flickr-albums-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-      }
-    }
-    @media (max-width: 560px) {
-      .flickr-albums-grid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-      }
-      .flickr-album-title { font-size: 0.85rem; }
-    }
-  </style>
 </head>
 <body class="page" id="photos.head" style="background-color: #000000;">
   <a href="../index.html" class="btn-accueil">ACCUEIL</a>
@@ -84,102 +18,15 @@
     <div style="height:50px;"></div>
     <p>Photographies, séries documentaires et projets personnels.</p>
 
-    <div class="card-grid">
-      <a class="card" href="../cieza/">
-        <div class="card-body">
-          <h3>Cieza</h3>
-          <p>Série photographique — Cieza, Espagne</p>
-        </div>
-      </a>
-    </div>
-
-    <h2>Albums Flickr</h2>
-    <div id="flickr-albums">
-      <p class="flickr-loading">Chargement des albums Flickr…</p>
-    </div>
-
     <h2>Liens</h2>
     <ul>
-      <li><a href="https://www.flickr.com/photos/197713351@N07/" target="_blank">Tous les albums sur Flickr →</a></li>
-      <li><a href="https://www.behance.net/siratton" target="_blank">Portfolio Behance</a></li>
-      <li><a href="https://independent-photo.com/photographer/come-nottaris/" target="_blank">The Independent Photographer</a></li>
+      <li><a href="https://www.flickr.com/photos/197713351@N07/" target="_blank">Mon Flickr →</a></li>
+      <li><a href="https://instagram.com/comenottaris" target="_blank">Mon Instagram (@comenottaris) →</a></li>
+      <li><a href="https://kdrive.infomaniak.com/app/share/705857/4c2bff90-2c02-46cf-87f8-80e93d901f98" target="_blank">Cieza — Série photographique →</a></li>
     </ul>
 
   </div>
   </div>
 
-<script>
-(function() {
-  var FLICKR_USER_ID = '197713351@N07';
-  /* Replace with your Flickr API key from https://www.flickr.com/services/api/keys/ */
-  var FLICKR_API_KEY = '';
-  var container = document.getElementById('flickr-albums');
-
-  function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
-  function loadAlbums() {
-    if (!FLICKR_API_KEY) {
-      container.innerHTML = '<p class="flickr-loading">Chargement des albums depuis Flickr…</p>' +
-        '<p style="text-align:center;"><a href="https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/" target="_blank">Voir les albums directement sur Flickr →</a></p>';
-      return;
-    }
-
-    var script = document.createElement('script');
-    var cbName = 'flickrAlbumsCallback_' + Date.now();
-
-    window[cbName] = function(data) {
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-
-      if (!data || !data.photosets || !data.photosets.photoset || data.photosets.photoset.length === 0) {
-        container.innerHTML = '<p class="flickr-error">Impossible de charger les albums Flickr.</p>' +
-          '<p style="text-align:center;"><a href="https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/" target="_blank">Voir les albums directement sur Flickr →</a></p>';
-        return;
-      }
-
-      var albums = data.photosets.photoset;
-      var html = '<div class="flickr-albums-grid">';
-
-      for (var i = 0; i < albums.length; i++) {
-        var album = albums[i];
-        var title = album.title._content || 'Album';
-        var photoCount = album.photos || 0;
-        var coverId = album.primary;
-        var server = album.server;
-        var secret = album.secret;
-        var imgUrl = 'https://live.staticflickr.com/' + server + '/' + coverId + '_' + secret + '_z.jpg';
-        var albumUrl = 'https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/' + album.id;
-
-        html += '<div class="flickr-album-card">' +
-          '<a href="' + escapeHtml(albumUrl) + '" target="_blank" rel="noopener">' +
-          '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(title) + '" loading="lazy">' +
-          '<div class="flickr-album-title">' + escapeHtml(title) + '</div>' +
-          '<div class="flickr-album-count">' + photoCount + ' photo' + (photoCount > 1 ? 's' : '') + '</div>' +
-          '</a></div>';
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
-    };
-
-    script.src = 'https://api.flickr.com/services/rest/?method=flickr.photosets.getList' +
-      '&api_key=' + FLICKR_API_KEY +
-      '&user_id=' + encodeURIComponent(FLICKR_USER_ID) +
-      '&format=json&jsoncallback=' + cbName +
-      '&primary_photo_extras=url_z';
-
-    script.onerror = function() {
-      container.innerHTML = '<p class="flickr-error">Erreur de connexion à Flickr.</p>' +
-        '<p style="text-align:center;"><a href="https://www.flickr.com/photos/' + FLICKR_USER_ID + '/albums/" target="_blank">Voir les albums directement sur Flickr →</a></p>';
-    };
-
-    document.body.appendChild(script);
-  }
-
-  loadAlbums();
-})();
-</script>
 </body>
 </html>

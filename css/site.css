@@ -341,19 +341,23 @@ button:focus-visible {
 /* ── Responsive — smartphone ─────────────────────────────────────── */
 @media (max-width: 560px) {
   .btn-accueil {
-    font-size: 8.4px;
-    padding: 3.6px 8.4px;
-    min-height: 26px;
+    font-size: 13px;
+    padding: 5px 10px;
+    min-height: 40px;
     top: 8px;
     left: 8px;
+    transform: scale(0.6);
+    transform-origin: top left;
   }
   .btn-english {
     position: fixed;
-    font-size: 7.8px;
-    padding: 3.6px 8.4px;
-    min-height: 26px;
+    font-size: 12px;
+    padding: 5px 10px;
+    min-height: 40px;
     top: 8px;
     right: 8px;
+    transform: scale(0.6);
+    transform-origin: top right;
   }
   .page-wrapper {
     margin: 60px auto 30px;
@@ -414,12 +418,16 @@ button:focus-visible {
 /* ── Petit smartphone ────────────────────────────────────────────── */
 @media (max-width: 380px) {
   .btn-accueil {
-    font-size: 7.2px;
-    padding: 2.4px 4.8px;
+    font-size: 12px;
+    padding: 4px 8px;
+    transform: scale(0.6);
+    transform-origin: top left;
   }
   .btn-english {
-    font-size: 6.6px;
-    padding: 2.4px 4.8px;
+    font-size: 11px;
+    padding: 4px 8px;
+    transform: scale(0.6);
+    transform-origin: top right;
   }
   .page-wrapper {
     padding: 0 10px;

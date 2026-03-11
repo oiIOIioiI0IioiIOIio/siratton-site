@@ -1,0 +1,73 @@
+CONTEXT FILE — siratton-site
+==============================
+Portfolio site for Côme Nottaris (data-journalist, photographer, journalist).
+Domain: www.siratton.site | Hosted on GitHub Pages | Pure static HTML/CSS/JS.
+
+STRUCTURE
+---------
+index.html              → Home page (FR). No ACCUEIL button, nav bar at top.
+home-en/index.html      → Home page (EN).
+photos/index.html       → Photography: links to Flickr, Instagram, Cieza (kdrive).
+photos-en/index.html    → Photography (EN).
+journalisme/index.html  → Journalism: flat card grid (Basta, Stup, RSF, JSL, Dataviz, Mediapart, Zahra Joya).
+journalisme-en/index.html → Journalism (EN).
+datavisualisation/index.html → D3.js interactive constellation graph (projects + skills).
+contact/index.html      → Contact: email, Instagram, Facebook, Bluesky, Mastodon, GitHub.
+autres/index.html       → Other projects: Automédiathèque, FEA.
+automediatheque/index.html → Automédiathèque project (links to automediatheque.org).
+fea/index.html          → Fait Entrer l'Accusé (Notion embed + questionnaire link).
+rsf/index.html          → RSF project: 6 Flourish dataviz bubbles (embed on click) + PDF.
+cieza/index.html        → Cieza photo series page (still exists, linked from photos via kdrive).
+jsl/index.html          → JSL project page.
+
+CSS
+---
+css/site.css            → Main stylesheet. Uses CSS variables for colors.
+  --color-bg: #000       (black background)
+  --color-text: #fff     (white text)
+  --color-accent: #EB2828 (red — photography)
+  --color-accent2: #84ADDC (blue — links/home)
+  --color-banner: #FFD682 (yellow — welcome banner)
+  --color-nav-jour: #fff (white — journalism nav)
+  --color-nav-other: #D3D3D3 (gray — other/contact nav, black text)
+  Font: Inter (Google Fonts)
+
+css/reset.min.css       → Yahoo CSS reset
+css/main.css            → Basic font inheritance
+
+DESIGN DECISIONS
+----------------
+- Dark theme (#000 background, #fff text).
+- Nav bar on home has NO "Accueil" button (already on home).
+- Other pages have a small fixed ACCUEIL button (top-left, compact).
+- Nav items "Autres Projets" and "Contact" use black text on light gray background.
+- Journalisme page: single flat card-grid, no section headings.
+- RSF page: dataviz bubbles open Flourish embeds in an overlay on click.
+- Datavisualisation: D3.js force-directed graph. Flourish skill node links to profile.
+- Photography: simple list of links (Flickr, Instagram, Cieza kdrive).
+- Contact: email + social links (Instagram, Facebook, Bluesky, Mastodon, GitHub).
+
+KEY EXTERNAL LINKS
+-------------------
+- Flickr: https://www.flickr.com/photos/197713351@N07/
+- Instagram: https://instagram.com/comenottaris
+- Bluesky: https://bsky.app/profile/siratton.bsky.social
+- Mastodon: https://piaille.fr/@siratton
+- GitHub: https://github.com/comenottaris
+- Mediapart blog: https://blogs.mediapart.fr/siratton/blog/
+- Automédiathèque: https://automediatheque.org
+- Flourish profile: https://app.flourish.studio/@Siratton
+
+KNOWN ISSUES / NOTES
+---------------------
+- The datavisualisation/index.html had encoding corruption (null bytes in JS strings)
+  from the HotGlue migration. These were fixed to proper UTF-8.
+- The JS syntax error (missing closing quote on line 264) was also fixed.
+- The Flickr API key is not configured (empty) — albums grid was removed from photos page.
+- English versions of pages (home-en, photos-en, journalisme-en) were NOT updated
+  in this pass — they may be out of sync with the French versions.
+
+TOOLS
+-----
+tools/scrape_hotglue.py → Python scraper to migrate from HotGlue (legacy, may not be needed).
+tools/requirements.txt  → Python deps for scraper.

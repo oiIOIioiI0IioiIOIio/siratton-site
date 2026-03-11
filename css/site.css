@@ -17,46 +17,70 @@
                      Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* ── Base moderne ────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
 /* ── Bouton Accueil (hérité de HotGlue) ─────────────────────────── */
 .btn-accueil {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--color-accent2);
   color: #000;
-  font-size: 16px;
-  padding: 4px 10px;
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 14px;
+  min-height: 44px;
   text-align: center;
   text-decoration: none;
-  letter-spacing: -0.05em;
-  line-height: 1.8;
+  letter-spacing: -0.02em;
+  border-radius: 0.5rem;
   position: fixed;
-  top: 8px;
+  top: 10px;
   left: 10px;
   z-index: 1000;
+  transition: opacity 0.2s, transform 0.2s;
 }
-.btn-accueil:hover { opacity: 0.85; }
+.btn-accueil:hover { opacity: 0.85; transform: scale(1.03); }
+.btn-accueil:active { transform: scale(0.97); }
 
 .btn-english {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: #c30000;
   color: #fff;
-  font-size: 14px;
-  padding: 4px 10px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  min-height: 44px;
   text-align: center;
   text-decoration: none;
-  letter-spacing: 0.05em;
-  line-height: 2;
+  letter-spacing: 0.03em;
+  border-radius: 0.5rem;
   position: fixed;
-  top: 16px;
-  right: 20px;
+  top: 10px;
+  right: 10px;
   z-index: 1000;
+  transition: opacity 0.2s, transform 0.2s;
 }
-.btn-english:hover { opacity: 0.85; }
+.btn-english:hover { opacity: 0.85; transform: scale(1.03); }
+.btn-english:active { transform: scale(0.97); }
 
 /* ── Layout principal ────────────────────────────────────────────── */
 .page-wrapper {
   font-family: var(--font-main);
   max-width: 1100px;
-  margin: 60px auto 40px;
+  margin: 70px auto 40px;
   padding: 0 20px;
   color: var(--color-text);
 }
@@ -65,25 +89,29 @@
 .nav-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
   justify-content: center;
   margin-bottom: 1.5rem;
 }
 .nav-item {
   flex: 1 1 150px;
   min-width: 120px;
-  text-align: center;
-  padding: 0.7rem 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.5rem;
   border-radius: 0.75rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
   text-decoration: none;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
   color: inherit;
 }
-.nav-item:hover { transform: translateY(-2px); }
+.nav-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
+.nav-item:active { transform: translateY(0); }
 .nav-photos  { background: var(--color-accent); color: #fff; }
 .nav-journal { background: var(--color-nav-jour); color: #000; border: 1px solid #ddd; }
 .nav-other   { background: var(--color-nav-other); color: #fff; border: 1px solid #555; }
@@ -95,10 +123,10 @@
   background: var(--color-banner);
   color: #000;
   border-radius: 0.75rem;
-  padding: 1rem;
+  padding: 1.2rem 1rem;
   text-align: center;
-  line-height: 1.5;
-  font-size: 1.5rem;
+  line-height: 1.6;
+  font-size: clamp(1rem, 3.5vw, 1.5rem);
   margin: 0.2rem;
 }
 
@@ -120,13 +148,13 @@
   margin-top: 1.5rem;
 }
 .page-content h1 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;
   margin-bottom: 1rem;
   color: var(--color-banner);
 }
 .page-content h2 {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
   font-weight: 600;
   margin: 1.5rem 0 0.75rem;
   color: var(--color-accent2);
@@ -138,11 +166,13 @@
 }
 .page-content p {
   margin-bottom: 1rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 .page-content a {
   color: var(--color-accent2);
   text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
 }
 .page-content a:hover {
   color: var(--color-banner);
@@ -152,25 +182,27 @@
   margin-bottom: 1rem;
 }
 .page-content li {
-  margin-bottom: 0.4rem;
-  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
   list-style: disc;
 }
 
 /* ── Grille photo / articles ─────────────────────────────────────── */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
   margin: 1.5rem 0;
 }
 .card {
   background: #111;
   border-radius: 0.75rem;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #222;
 }
-.card:hover { transform: translateY(-4px); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.card:active { transform: translateY(-1px); }
 .card img {
   width: 100%;
   height: 200px;
@@ -186,6 +218,7 @@
 .card-body p {
   font-size: 0.9rem;
   color: #aaa;
+  line-height: 1.5;
 }
 
 /* ── Iframe container ────────────────────────────────────────────── */
@@ -250,14 +283,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
+  min-height: 44px;
   background: #1a1a1a;
   border-radius: 0.5rem;
   color: var(--color-accent2);
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
+  border: 1px solid #333;
 }
-.pdf-list a:hover { background: #222; }
+.pdf-list a:hover { background: #222; transform: translateX(4px); }
+.pdf-list a:active { transform: translateX(2px); }
 .pdf-list a::before {
   content: '📄';
 }
@@ -268,18 +304,148 @@
   border-radius: 0.75rem;
   padding: 2rem;
   margin: 1.5rem 0;
+  border: 1px solid #222;
 }
 .contact-info p {
   font-size: 1.1rem;
 }
 
-/* ── Responsive ──────────────────────────────────────────────────── */
+/* ── Focus visible pour accessibilité ────────────────────────────── */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-banner);
+  outline-offset: 2px;
+}
+
+/* ── Responsive — tablette ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 0 16px;
+  }
+  .nav-item {
+    flex: 1 1 calc(50% - 0.4rem);
+    min-width: 0;
+    font-size: 1rem;
+    padding: 0.65rem 0.4rem;
+  }
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+  .contact-info {
+    padding: 1.5rem;
+  }
+}
+
+/* ── Responsive — smartphone ─────────────────────────────────────── */
 @media (max-width: 560px) {
-  .nav-bar { flex-direction: column; }
-  .nav-item { flex: 1 1 auto; font-size: 1.1rem; }
-  .welcome { font-size: 0.95rem; margin: 0 0.5rem; }
-  .image-wrapper img { width: 96%; }
-  .btn-english { position: static; display: block; margin: 10px auto; width: fit-content; }
-  .page-wrapper { margin-top: 45px; }
-  .page-content h1 { font-size: 1.5rem; }
+  .btn-accueil {
+    font-size: 13px;
+    padding: 5px 10px;
+    min-height: 40px;
+    top: 8px;
+    left: 8px;
+  }
+  .btn-english {
+    position: fixed;
+    font-size: 12px;
+    padding: 5px 10px;
+    min-height: 40px;
+    top: 8px;
+    right: 8px;
+  }
+  .page-wrapper {
+    margin: 60px auto 30px;
+    padding: 0 12px;
+  }
+  .nav-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .nav-item {
+    flex: 1 1 auto;
+    font-size: 1rem;
+    min-height: 48px;
+    border-radius: 0.6rem;
+  }
+  .welcome {
+    margin: 0;
+    padding: 1rem 0.8rem;
+    border-radius: 0.6rem;
+  }
+  .image-wrapper {
+    margin: 1.2rem 0;
+  }
+  .image-wrapper img {
+    width: 100%;
+    border-radius: 0.4rem;
+  }
+  .page-content h1 {
+    font-size: 1.5rem;
+  }
+  .page-content h2 {
+    font-size: 1.2rem;
+  }
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .card-body {
+    padding: 0.85rem;
+  }
+  .contact-info {
+    padding: 1.2rem;
+  }
+  .contact-info ul {
+    margin-left: 0.5rem;
+  }
+  .timeline {
+    padding-left: 24px;
+  }
+  .timeline-item {
+    padding-left: 14px;
+  }
+  .iframe-container iframe {
+    border-radius: 0.3rem;
+  }
+}
+
+/* ── Petit smartphone ────────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .btn-accueil {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .btn-english {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .page-wrapper {
+    padding: 0 10px;
+    margin-top: 56px;
+  }
+  .nav-item {
+    font-size: 0.95rem;
+  }
+  .page-content p,
+  .page-content li {
+    font-size: 0.95rem;
+  }
+}
+
+/* ── Safe-area pour téléphones à encoche ──────────────────────────── */
+@supports (padding: env(safe-area-inset-top)) {
+  .btn-accueil {
+    top: calc(10px + env(safe-area-inset-top));
+    left: calc(10px + env(safe-area-inset-left));
+  }
+  .btn-english {
+    top: calc(10px + env(safe-area-inset-top));
+    right: calc(10px + env(safe-area-inset-right));
+  }
+  .page-wrapper {
+    padding-left: calc(12px + env(safe-area-inset-left));
+    padding-right: calc(12px + env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

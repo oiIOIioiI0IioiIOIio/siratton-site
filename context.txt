@@ -6,11 +6,8 @@ Domain: www.siratton.site | Hosted on GitHub Pages | Pure static HTML/CSS/JS.
 STRUCTURE
 ---------
 index.html              → Home page (FR). No ACCUEIL button, nav bar at top.
-home-en/index.html      → Home page (EN).
 photos/index.html       → Photography: links to Flickr, Instagram, Cieza (kdrive).
-photos-en/index.html    → Photography (EN).
 journalisme/index.html  → Journalism: flat card grid (Basta, Stup, RSF, JSL, Dataviz, Mediapart, Zahra Joya).
-journalisme-en/index.html → Journalism (EN).
 datavisualisation/index.html → D3.js interactive constellation graph (projects + skills).
 contact/index.html      → Contact: email, Instagram, Facebook, Bluesky, Mastodon, GitHub.
 autres/index.html       → Other projects: Automédiathèque, FEA.
@@ -18,7 +15,16 @@ automediatheque/index.html → Automédiathèque project (links to automediatheq
 fea/index.html          → Fait Entrer l'Accusé (Notion embed + questionnaire link).
 rsf/index.html          → RSF project: 6 Flourish dataviz bubbles (embed on click) + PDF.
 cieza/index.html        → Cieza photo series page (still exists, linked from photos via kdrive).
-jsl/index.html          → JSL project page.
+jsl/index.html          → JSL project page: D3.js force-directed dataviz with 8 articles.
+                           Each article node shows title; click opens tooltip with two options:
+                           "Lire ici (PDF)" loads the local PDF, "Lire sur le site" opens the
+                           article on c.lejsl.com. PDFs stored in jsl/pdf/.
+
+ENGLISH PAGES
+-------------
+English pages (home-en/, photos-en/, journalisme-en/) were deleted because they were
+out of sync with the French versions. English content should be included directly in the
+same HTML files if needed in the future.
 
 CSS
 ---
@@ -28,21 +34,26 @@ css/site.css            → Main stylesheet. Uses CSS variables for colors.
   --color-accent: #EB2828 (red — photography)
   --color-accent2: #84ADDC (blue — links/home)
   --color-banner: #FFD682 (yellow — welcome banner)
-  --color-nav-jour: #fff (white — journalism nav)
-  --color-nav-other: #D3D3D3 (gray — other/contact nav, black text)
+  --color-nav-jour: #fff (white background — journalism nav, black text)
+  --color-nav-other: #D3D3D3 (gray background — other/contact nav, black text)
+  Nav color classes use `a.nav-*` selectors to override the `a:link` reset in main.css.
   Font: Inter (Google Fonts)
 
 css/reset.min.css       → Yahoo CSS reset
-css/main.css            → Basic font inheritance
+css/main.css            → Basic font inheritance + link color reset (color: inherit)
 
 DESIGN DECISIONS
 ----------------
 - Dark theme (#000 background, #fff text).
 - Nav bar on home has NO "Accueil" button (already on home).
 - Other pages have a small fixed ACCUEIL button (top-left, compact).
-- Nav items "Autres Projets" and "Contact" use black text on light gray background.
+- Nav items use `a.nav-*` selectors so their text color (#000) is not overridden
+  by the `a:link { color: inherit }` rule in main.css.
 - Journalisme page: single flat card-grid, no section headings.
 - RSF page: dataviz bubbles open Flourish embeds in an overlay on click.
+- JSL page: D3.js force-directed bubble chart. 8 article nodes colored by category
+  (Transport, Société, Économie, Culture & Loisirs). Click shows tooltip with
+  "Lire ici (PDF)" and "Lire sur le site" buttons.
 - Datavisualisation: D3.js force-directed graph. Flourish skill node links to profile.
 - Photography: simple list of links (Flickr, Instagram, Cieza kdrive).
 - Contact: email + social links (Instagram, Facebook, Bluesky, Mastodon, GitHub).
@@ -64,8 +75,6 @@ KNOWN ISSUES / NOTES
   from the HotGlue migration. These were fixed to proper UTF-8.
 - The JS syntax error (missing closing quote on line 264) was also fixed.
 - The Flickr API key is not configured (empty) — albums grid was removed from photos page.
-- English versions of pages (home-en, photos-en, journalisme-en) were NOT updated
-  in this pass — they may be out of sync with the French versions.
 
 TOOLS
 -----

@@ -8,6 +8,76 @@
   <link rel="stylesheet" href="../css/reset.min.css">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/site.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    #jsl-chart {
+      width: 100%;
+      max-width: 900px;
+      margin: 2rem auto;
+    }
+    #jsl-chart svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .node-group { cursor: pointer; }
+    .node-circle {
+      stroke: #333;
+      stroke-width: 1.5;
+      transition: filter 0.2s;
+    }
+    .node-group:hover .node-circle {
+      filter: brightness(1.3);
+    }
+    .node-label {
+      fill: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .tooltip-box {
+      pointer-events: all;
+    }
+    .tooltip-box rect {
+      rx: 8;
+      ry: 8;
+    }
+    .tooltip-btn {
+      cursor: pointer;
+    }
+    .tooltip-btn rect {
+      rx: 5;
+      ry: 5;
+      transition: fill 0.15s;
+    }
+    .tooltip-btn:hover rect {
+      fill: #555 !important;
+    }
+    .tooltip-btn text {
+      fill: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+    .tooltip-title {
+      fill: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-anchor: middle;
+    }
+    .category-label {
+      fill: #666;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body class="page" id="jsl.head" style="background-color: #000000;">
   <a href="../index.html" class="btn-accueil">ACCUEIL</a>
@@ -15,28 +85,283 @@
   <div class="page-wrapper">
   <div class="page-content">
     <div style="height:50px;"></div>
-    <p>Travaux et publications — documents PDF disponibles ci-dessous.</p>
+    <h1 style="color:#FFD682; text-align:center;">Le Journal de Saône-et-Loire</h1>
+    <p style="text-align:center;">Articles publiés au JSL — cliquez sur un article pour le lire.</p>
 
-    <h2>Documents PDF</h2>
-    <ul class="pdf-list">
-      <!-- Les PDF seront ajoutés automatiquement par le script de scraping,
-           ou manuellement en ajoutant des <li> ici.
-           Exemple :
-           <li><a href="pdf/document.pdf" target="_blank">Nom du document</a></li>
-      -->
-      <li><em style="color:#888;">Les PDF seront disponibles après exécution du script de scraping
-      (<code>python tools/scrape_hotglue.py --page jsl</code>), ou vous pouvez les ajouter
-      manuellement dans le dossier <code>jsl/pdf/</code>.</em></li>
-    </ul>
-
-    <p>Pour ajouter un PDF manuellement :</p>
-    <ol>
-      <li>Placez le fichier dans <code>jsl/pdf/</code></li>
-      <li>Ajoutez une ligne dans la liste ci-dessus :
-        <code>&lt;li&gt;&lt;a href="pdf/votre-fichier.pdf"&gt;Titre&lt;/a&gt;&lt;/li&gt;</code></li>
-    </ol>
+    <div id="jsl-chart"></div>
 
   </div>
   </div>
+
+  <script>
+  (function() {
+    var articles = [
+      {
+        title: "Travaux sur la ligne SNCF : entraide et bouche-à-oreille vont bon train",
+        short: "Travaux SNCF",
+        pdf: "pdf/SNCF.pdf",
+        url: "https://c.lejsl.com/transport/2023/12/11/travaux-sur-la-ligne-sncf-entraide-et-bouche-a-oreille-vont-bon-train",
+        category: "Transport",
+        date: "2023-12-11",
+        color: "#E07C24"
+      },
+      {
+        title: "Les maraudes de la Croix-Rouge, de la chaleur au cœur de la nuit",
+        short: "Maraudes Croix-Rouge",
+        pdf: "pdf/croix-rouge.pdf",
+        url: "https://c.lejsl.com/societe/2023/12/16/les-maraudes-de-la-croix-rouge-de-la-chaleur-au-coeur-de-la-nuit",
+        category: "Société",
+        date: "2023-12-16",
+        color: "#EB2828"
+      },
+      {
+        title: "Brasseries artisanales : comment sortir de la crise",
+        short: "Brasseries artisanales",
+        pdf: "pdf/brasseries-artisanales.pdf",
+        url: "https://c.lejsl.com/economie/2024/01/11/brasseries-artisanales-comment-sortir-de-la-crise",
+        category: "Économie",
+        date: "2024-01-11",
+        color: "#84ADDC"
+      },
+      {
+        title: "Après les ventes privées, place aux soldes jusqu'au 6 février",
+        short: "Soldes",
+        pdf: "pdf/soldes.pdf",
+        url: "https://c.lejsl.com/economie/2024/01/10/apres-les-ventes-privees-place-aux-soldes-jusqu-au-6-fevrier",
+        category: "Économie",
+        date: "2024-01-10",
+        color: "#84ADDC"
+      },
+      {
+        title: "Restauration : le Saint-Loup repart de plus belle",
+        short: "Restaurant Saint-Loup",
+        pdf: "pdf/restaurant-saint-loup.pdf",
+        url: "https://c.lejsl.com/economie/2023/12/19/restauration-le-saint-loup-repart-de-plus-belle",
+        category: "Économie",
+        date: "2023-12-19",
+        color: "#84ADDC"
+      },
+      {
+        title: "Des illuminations en famille pour partager la magie de Noël",
+        short: "Illuminations de Noël",
+        pdf: "pdf/illuminations-noel.pdf",
+        url: "https://c.lejsl.com/culture-loisirs/2023/12/23/des-illuminations-en-famille-pour-partager-la-magie-de-noel",
+        category: "Culture & Loisirs",
+        date: "2023-12-23",
+        color: "#A67FD0"
+      },
+      {
+        title: "Propriété de la commune, une grange du XVIIe siècle en cours de démolition",
+        short: "Grange XVIIe siècle",
+        pdf: "pdf/demolition.pdf",
+        url: "https://c.lejsl.com/culture-loisirs/2023/12/28/propriete-de-la-commune-une-grange-du-xviie-siecle-en-cours-de-demolition",
+        category: "Culture & Loisirs",
+        date: "2023-12-28",
+        color: "#A67FD0"
+      },
+      {
+        title: "Après 35 ans de service, clap de fin pour la boutique La Boîte à Photo",
+        short: "La Boîte à Photo",
+        pdf: "pdf/boutique-photo.pdf",
+        url: "https://c.lejsl.com/economie/2024/01/03/apres-35-ans-de-service-clap-de-fin-pour-la-boutique-la-boite-a-photo",
+        category: "Économie",
+        date: "2024-01-03",
+        color: "#84ADDC"
+      }
+    ];
+
+    var container = document.getElementById("jsl-chart");
+    var width = 900;
+    var height = 600;
+    var nodeRadius = 60;
+
+    var svg = d3.select("#jsl-chart")
+      .append("svg")
+      .attr("viewBox", "0 0 " + width + " " + height)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("fill", "#000")
+      .attr("rx", 12);
+
+    var tooltip = svg.append("g")
+      .attr("class", "tooltip-box")
+      .style("display", "none");
+
+    var simulation = d3.forceSimulation(articles)
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("collision", d3.forceCollide().radius(nodeRadius + 10))
+      .force("x", d3.forceX(width / 2).strength(0.05))
+      .force("y", d3.forceY(height / 2).strength(0.05));
+
+    var nodeGroups = svg.selectAll(".node-group")
+      .data(articles)
+      .enter()
+      .append("g")
+      .attr("class", "node-group")
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    nodeGroups.append("circle")
+      .attr("class", "node-circle")
+      .attr("r", nodeRadius)
+      .attr("fill", function(d) { return d.color; })
+      .attr("fill-opacity", 0.85);
+
+    nodeGroups.each(function(d) {
+      var g = d3.select(this);
+      var words = d.short.split(/\s+/);
+      var lines = [];
+      var current = "";
+      words.forEach(function(w) {
+        if ((current + " " + w).trim().length > 12 && current.length > 0) {
+          lines.push(current);
+          current = w;
+        } else {
+          current = current ? current + " " + w : w;
+        }
+      });
+      if (current) lines.push(current);
+
+      lines.forEach(function(line, i) {
+        g.append("text")
+          .attr("class", "node-label")
+          .attr("dy", (i - (lines.length - 1) / 2) * 14)
+          .text(line);
+      });
+
+      g.append("text")
+        .attr("class", "category-label")
+        .attr("dy", nodeRadius - 12)
+        .text(d.category);
+    });
+
+    nodeGroups.on("click", function(event, d) {
+      event.stopPropagation();
+      showTooltip(d);
+    });
+
+    svg.on("click", function() {
+      tooltip.style("display", "none");
+    });
+
+    function showTooltip(d) {
+      tooltip.selectAll("*").remove();
+      tooltip.style("display", null);
+
+      var tx = Math.min(Math.max(d.x, 170), width - 170);
+      var ty = Math.min(Math.max(d.y - nodeRadius - 90, 10), height - 110);
+      tooltip.attr("transform", "translate(" + tx + "," + ty + ")");
+
+      tooltip.append("rect")
+        .attr("x", -160)
+        .attr("y", -10)
+        .attr("width", 320)
+        .attr("height", 100)
+        .attr("fill", "#1a1a1a")
+        .attr("stroke", "#444")
+        .attr("stroke-width", 1);
+
+      var titleLines = wrapText(d.title, 40);
+      titleLines.forEach(function(line, i) {
+        tooltip.append("text")
+          .attr("class", "tooltip-title")
+          .attr("y", 8 + i * 16)
+          .text(line);
+      });
+
+      var btnY = 14 + titleLines.length * 16;
+
+      var btnPdf = tooltip.append("g")
+        .attr("class", "tooltip-btn")
+        .attr("transform", "translate(-75," + btnY + ")")
+        .style("cursor", "pointer")
+        .on("click", function(event) {
+          event.stopPropagation();
+          window.open(d.pdf, "_blank");
+        });
+
+      btnPdf.append("rect")
+        .attr("x", -65)
+        .attr("y", -2)
+        .attr("width", 130)
+        .attr("height", 28)
+        .attr("fill", "#333");
+
+      btnPdf.append("text")
+        .attr("y", 17)
+        .text("📄 Lire ici (PDF)");
+
+      var btnSite = tooltip.append("g")
+        .attr("class", "tooltip-btn")
+        .attr("transform", "translate(75," + btnY + ")")
+        .style("cursor", "pointer")
+        .on("click", function(event) {
+          event.stopPropagation();
+          window.open(d.url, "_blank");
+        });
+
+      btnSite.append("rect")
+        .attr("x", -65)
+        .attr("y", -2)
+        .attr("width", 130)
+        .attr("height", 28)
+        .attr("fill", "#333");
+
+      btnSite.append("text")
+        .attr("y", 17)
+        .text("🔗 Lire sur le site");
+
+      var totalH = btnY + 36;
+      tooltip.select("rect").attr("height", totalH);
+    }
+
+    function wrapText(text, maxLen) {
+      var words = text.split(/\s+/);
+      var lines = [];
+      var current = "";
+      words.forEach(function(w) {
+        if ((current + " " + w).trim().length > maxLen && current.length > 0) {
+          lines.push(current);
+          current = w;
+        } else {
+          current = current ? current + " " + w : w;
+        }
+      });
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    simulation.on("tick", function() {
+      nodeGroups.attr("transform", function(d) {
+        d.x = Math.max(nodeRadius, Math.min(width - nodeRadius, d.x));
+        d.y = Math.max(nodeRadius, Math.min(height - nodeRadius, d.y));
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+    });
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+  })();
+  </script>
 </body>
 </html>

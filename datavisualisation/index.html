@@ -592,7 +592,7 @@ function getWidth(sel) {
     {name:'Portugal',color:'#d19a66'},
     {name:'Irlande',color:'#98c379'},
   ];
-  // Simulated scores per year (realistic-ish press freedom progression)
+  // Simulated scores per year — base 75–95, drift ±4/year, clamped [60,100]
   const data = {};
   items.forEach(item => {
     data[item.name] = {};
@@ -771,7 +771,7 @@ function getWidth(sel) {
 
   const colors = ['#84ADDC','#EB2828','#FFD682','#6dd47e','#c792ea','#56b6c2','#ff8c42'];
   const particles = [];
-  const maxParticles = 60;
+  const maxParticles = 60; // cap for performance
 
   function spawnParticle() {
     if (particles.length >= maxParticles) return;
@@ -806,6 +806,7 @@ function getWidth(sel) {
       const pt = measurePath.node().getPointAtLength((startOffset + p.t * (1 - startOffset)) * totalLen);
       const jitter = (Math.random() - 0.5) * 4;
       pathEl.attr('cx', pt.x).attr('cy', pt.y + jitter);
+      // Opacity: fade-in first 10%, steady 80%, fade-out last 15%
       pathEl.attr('opacity', p.t < 0.1 ? p.t * 10 : p.t > 0.85 ? (1 - p.t) * 6.67 : 0.8);
       requestAnimationFrame(animate);
     }

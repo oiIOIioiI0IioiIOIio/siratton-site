@@ -11,37 +11,147 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     /* ── Page-specific styles ──────────────────────────────────── */
-    .viz-section {
+    .intro-text {
+      font-size: 1rem;
+      color: #aaa;
+      line-height: 1.7;
+      max-width: 700px;
+    }
+    .intro-text strong { color: #fff; }
+
+    /* ── Hero constellation ─────────────────────────────────────── */
+    #hero-constellation {
+      width: 100%;
+      margin: 1rem 0 2rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #080c18 0%, #000 70%);
+    }
+    #hero-constellation svg { display: block; width: 100%; height: auto; }
+
+    /* ── Project sections ──────────────────────────────────────── */
+    .project-section {
       margin: 2.5rem 0;
       padding: 1.5rem;
       background: #0a0a0a;
       border-radius: 0.75rem;
       border: 1px solid #1a1a1a;
+      transition: border-color 0.3s;
     }
-    .viz-section h2 {
-      font-size: clamp(1.2rem, 4vw, 1.5rem);
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #84ADDC;
-    }
-    .viz-section p.viz-desc {
-      font-size: 0.9rem;
-      color: #888;
+    .project-section:hover { border-color: #333; }
+    .project-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
       margin-bottom: 1rem;
-      line-height: 1.5;
     }
-    .viz-container {
-      width: 100%;
-      overflow: hidden;
+    .project-icon {
+      width: 48px;
+      height: 48px;
       border-radius: 0.5rem;
-      background: #050508;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
     }
-    .viz-container svg {
-      display: block;
+    .project-header h2 {
+      font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 0.25rem;
+    }
+    .project-header .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 1rem;
+      background: #1a1a1a;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      white-space: nowrap;
+    }
+    .project-desc {
+      font-size: 0.9rem;
+      color: #999;
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+    .project-desc strong { color: #ccc; }
+    .project-viz {
       width: 100%;
-      height: auto;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background: #050508;
+      margin-bottom: 1rem;
     }
-    /* Tooltip */
+    .project-viz svg { display: block; width: 100%; height: auto; }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #84ADDC;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 0.4rem;
+      border: 1px solid #84ADDC33;
+      transition: all 0.2s;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .project-link:hover {
+      background: #84ADDC15;
+      border-color: #84ADDC;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .project-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    /* ── Skills section ─────────────────────────────────────────── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .skill-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 0.5rem;
+      padding: 0.8rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .skill-card:hover { border-color: #84ADDC; transform: translateY(-2px); }
+    .skill-card .skill-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+    .skill-card .skill-bar-bg {
+      width: 100%;
+      height: 4px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-card .skill-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0;
+      transition: width 1.5s ease;
+    }
+
+    /* ── Tooltip ────────────────────────────────────────────────── */
     .d3-tooltip {
       position: absolute;
       pointer-events: none;
@@ -56,7 +166,7 @@
       z-index: 9999;
       backdrop-filter: blur(6px);
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      max-width: 260px;
+      max-width: 280px;
       opacity: 0;
       transition: opacity 0.15s;
     }
@@ -66,62 +176,26 @@
       color: #FFD682;
       margin-bottom: 4px;
     }
-    .d3-tooltip .tt-value {
+    .d3-tooltip .tt-value { color: #84ADDC; font-weight: 600; }
+
+    /* ── Section title ─────────────────────────────────────────── */
+    .section-title {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      font-weight: 600;
       color: #84ADDC;
-      font-weight: 600;
+      margin: 2.5rem 0 0.5rem;
     }
-    /* Controls */
-    .viz-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+    .section-subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
-    .viz-btn {
-      background: #1a1a1a;
-      color: #aaa;
-      border: 1px solid #333;
-      border-radius: 0.4rem;
-      padding: 6px 14px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .viz-btn:hover { background: #222; color: #fff; border-color: #555; }
-    .viz-btn.active { background: #84ADDC; color: #000; border-color: #84ADDC; }
-    /* Legend */
-    .viz-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 0.75rem;
-      font-size: 0.8rem;
-      color: #888;
-    }
-    .viz-legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-    .viz-legend .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    /* Force graph labels */
-    .node-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      fill: #ccc;
-      pointer-events: none;
-      text-anchor: middle;
-    }
-    /* Responsive */
+
+    /* ── Responsive ─────────────────────────────────────────────── */
     @media (max-width: 560px) {
-      .viz-section { padding: 1rem; margin: 1.5rem 0; }
+      .project-section { padding: 1rem; margin: 1.5rem 0; }
+      .project-header { flex-direction: column; gap: 0.5rem; }
+      .skills-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
     }
   </style>
 </head>
@@ -131,64 +205,162 @@
   <div class="page-wrapper">
   <div class="page-content">
     <div style="height:50px;"></div>
-    <p>Visualisations de données interactives réalisées avec <strong>D3.js</strong> —
-    exploration, analyse et mise en récit par les données.</p>
+
+    <p class="intro-text">
+      Portfolio interactif de <strong>data-visualisation</strong> — cette page présente mes
+      différents travaux de datajournalisme et de visualisation de données, avec des aperçus
+      interactifs réalisés en <strong>D3.js</strong>.
+    </p>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- VIZ 1 : Radial press freedom chart                        -->
+    <!-- HERO: Interactive constellation of skills & projects       -->
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <div class="viz-section">
-      <h2>Indice mondial de liberté de la presse</h2>
-      <p class="viz-desc">Visualisation radiale interactive — scores de liberté de la presse
-      par pays, regroupés par continent. Survolez pour explorer, cliquez sur les
-      boutons pour filtrer par région.</p>
-      <div class="viz-controls" id="radial-controls"></div>
-      <div class="viz-container" id="radial-chart"></div>
-      <div class="viz-legend" id="radial-legend"></div>
-    </div>
+    <div id="hero-constellation"></div>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- VIZ 2 : Force-directed media ecosystem                    -->
+    <!-- PROJECT 1: RSF — Press Freedom                            -->
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <div class="viz-section">
-      <h2>Écosystème médiatique — réseau de forces</h2>
-      <p class="viz-desc">Graphe de forces interactif montrant les connexions entre
-      différents types de médias, thématiques et outils du data-journalisme.
-      Glissez les nœuds pour explorer le réseau.</p>
-      <div class="viz-container" id="force-graph"></div>
-      <div class="viz-legend" id="force-legend"></div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- VIZ 3 : Animated streaming bar chart race                 -->
-    <!-- ═══════════════════════════════════════════════════════════ -->
-    <div class="viz-section">
-      <h2>Évolution temporelle — course de barres animée</h2>
-      <p class="viz-desc">Animation montrant l'évolution de métriques sur plusieurs années.
-      Technique couramment utilisée en data-journalisme pour raconter une histoire
-      temporelle.</p>
-      <div class="viz-controls">
-        <button class="viz-btn" id="race-play">▶ Lancer</button>
-        <button class="viz-btn" id="race-reset">↺ Réinitialiser</button>
+    <div class="project-section" id="proj-rsf">
+      <div class="project-header">
+        <div class="project-icon" style="background:#c30000;">📊</div>
+        <div>
+          <h2>RSF — Bilan mondial de la liberté de la presse</h2>
+          <div class="project-tags">
+            <span class="tag">Data-journalisme</span>
+            <span class="tag">RSF</span>
+            <span class="tag">Python</span>
+            <span class="tag">Analyse de données</span>
+          </div>
+        </div>
       </div>
-      <div class="viz-container" id="bar-race"></div>
+      <p class="project-desc">
+        Contribution au <strong>Bilan 2024 de Reporters Sans Frontières</strong> en tant que
+        data-journaliste stagiaire, aux côtés de Blanche Marès et de l'équipe RSF.
+        Collecte, nettoyage et analyse des données sur la liberté de la presse
+        dans le monde. Ci-dessous, un aperçu interactif des scores par région.
+      </p>
+      <div class="project-viz" id="viz-rsf"></div>
+      <div class="project-links">
+        <a class="project-link" href="../rsf/">📄 Voir le projet RSF →</a>
+        <a class="project-link" href="https://rsf.org/sites/default/files/medias/file/2024/12/Bilan%20RSF%202024%20FR.pdf" target="_blank">📥 Bilan RSF 2024 (PDF)</a>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- VIZ 4 : Particle flow / streaming data                    -->
+    <!-- PROJECT 2: Basta! — Data journalism articles               -->
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <div class="viz-section">
-      <h2>Flux de données en temps réel</h2>
-      <p class="viz-desc">Simulation de flux de données en continu —
-      visualisation de particules inspirée des flux d'informations numériques.
-      Chaque particule représente un événement dans un flux de données.</p>
-      <div class="viz-container" id="particle-flow"></div>
+    <div class="project-section" id="proj-basta">
+      <div class="project-header">
+        <div class="project-icon" style="background:#EB2828;">✍️</div>
+        <div>
+          <h2>Basta! — Enquêtes et data-journalisme</h2>
+          <div class="project-tags">
+            <span class="tag">Enquête</span>
+            <span class="tag">Data-journalisme</span>
+            <span class="tag">Justice sociale</span>
+          </div>
+        </div>
+      </div>
+      <p class="project-desc">
+        Articles publiés sur <strong>Basta!</strong>, média indépendant spécialisé dans
+        les questions sociales et écologiques. Travail d'enquête mêlant
+        collecte de données, interviews et analyse approfondie.
+      </p>
+      <div class="project-viz" id="viz-basta"></div>
+      <div class="project-links">
+        <a class="project-link" href="https://basta.media/come-nottaris" target="_blank">📰 Mes articles sur Basta! →</a>
+      </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- PROJECT 3: STUP.MEDIA                                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="project-section" id="proj-stup">
+      <div class="project-header">
+        <div class="project-icon" style="background:#FFD682; color:#000;">📡</div>
+        <div>
+          <h2>STUP.MEDIA — Contributions journalistiques</h2>
+          <div class="project-tags">
+            <span class="tag">Journalisme</span>
+            <span class="tag">Rédaction</span>
+            <span class="tag">Enquête</span>
+          </div>
+        </div>
+      </div>
+      <p class="project-desc">
+        Contributions au média <strong>STUP.MEDIA</strong> — articles, enquêtes et
+        reportages sur des sujets de société.
+      </p>
+      <div class="project-viz" id="viz-stup"></div>
+      <div class="project-links">
+        <a class="project-link" href="https://stup.media/author/comenottaris/" target="_blank">📰 Mes articles sur STUP.MEDIA →</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- PROJECT 4: Automédiathèque                                -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="project-section" id="proj-auto">
+      <div class="project-header">
+        <div class="project-icon" style="background:#6dd47e; color:#000;">🗂️</div>
+        <div>
+          <h2>Automédiathèque — Base de données open-source</h2>
+          <div class="project-tags">
+            <span class="tag">Open data</span>
+            <span class="tag">Open source</span>
+            <span class="tag">Automédias</span>
+            <span class="tag">GitHub</span>
+          </div>
+        </div>
+      </div>
+      <p class="project-desc">
+        Projet de <strong>base de données collaborative et open-source</strong> recensant les automédias
+        francophones. Développement web, collecte de données, catégorisation.
+      </p>
+      <div class="project-viz" id="viz-auto"></div>
+      <div class="project-links">
+        <a class="project-link" href="../automediatheque/">🗂️ Voir le projet →</a>
+        <a class="project-link" href="https://automediatheque.linkpc.net/" target="_blank">🌐 Site Automédiathèque</a>
+        <a class="project-link" href="https://github.com/comenottaris/AUTOMEDIATHEQUE" target="_blank">💻 Code source</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- PROJECT 5: FEA — Fait Entrer l'Accusé                     -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="project-section" id="proj-fea">
+      <div class="project-header">
+        <div class="project-icon" style="background:#c792ea; color:#000;">⚖️</div>
+        <div>
+          <h2>Fait Entrer l'Accusé — Base de données collaborative</h2>
+          <div class="project-tags">
+            <span class="tag">Base de données</span>
+            <span class="tag">Notion</span>
+            <span class="tag">Collaboratif</span>
+          </div>
+        </div>
+      </div>
+      <p class="project-desc">
+        Projet collaboratif de <strong>base de données</strong> autour de l'émission
+        « Fait Entrer l'Accusé ». Organisation, catégorisation et mise en forme
+        de données structurées.
+      </p>
+      <div class="project-viz" id="viz-fea"></div>
+      <div class="project-links">
+        <a class="project-link" href="../fea/">⚖️ Voir le projet →</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SKILLS & TOOLS                                            -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">Compétences &amp; outils</h2>
+    <p class="section-subtitle">Technologies et méthodologies utilisées dans mes travaux de data-visualisation.</p>
+    <div class="skills-grid" id="skills-grid"></div>
 
   </div>
   </div>
 
-  <!-- Shared tooltip -->
   <div class="d3-tooltip" id="tooltip"></div>
 
 <script>
@@ -201,326 +373,101 @@ function showTooltip(evt, html) {
   const tt = tooltip.node();
   const px = evt.pageX + 12, py = evt.pageY - 10;
   const maxX = window.innerWidth - tt.offsetWidth - 20;
-  tooltip.style('left', Math.min(px, maxX) + 'px')
-         .style('top', py + 'px');
+  tooltip.style('left', Math.min(px, maxX) + 'px').style('top', py + 'px');
 }
 function hideTooltip() { tooltip.classed('visible', false); }
-
 function getWidth(sel) {
   return document.querySelector(sel).getBoundingClientRect().width;
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// VIZ 1 — RADIAL PRESS FREEDOM CHART
+// HERO — Interactive constellation linking projects & skills
 // ═══════════════════════════════════════════════════════════════════
 (function() {
-  const regions = {
-    'Europe': { color: '#84ADDC', countries: [
-      {name:'Norvège',score:95},{name:'Danemark',score:93},{name:'Suède',score:91},
-      {name:'Pays-Bas',score:89},{name:'Finlande',score:92},{name:'Irlande',score:88},
-      {name:'Portugal',score:87},{name:'Suisse',score:86},{name:'Belgique',score:84},
-      {name:'Allemagne',score:82},{name:'France',score:78},{name:'Espagne',score:76},
-      {name:'Italie',score:72},{name:'Royaume-Uni',score:80},{name:'Grèce',score:60},
-      {name:'Pologne',score:55},{name:'Hongrie',score:45},{name:'Turquie',score:32}
-    ]},
-    'Amériques': { color: '#EB2828', countries: [
-      {name:'Canada',score:86},{name:'Costa Rica',score:83},{name:'Uruguay',score:82},
-      {name:'Jamaïque',score:78},{name:'États-Unis',score:72},{name:'Argentine',score:68},
-      {name:'Chili',score:70},{name:'Brésil',score:56},{name:'Colombie',score:52},
-      {name:'Mexique',score:38},{name:'Venezuela',score:28},{name:'Cuba',score:18}
-    ]},
-    'Afrique': { color: '#FFD682', countries: [
-      {name:'Namibie',score:80},{name:'Cap-Vert',score:78},{name:'Afrique du Sud',score:72},
-      {name:'Ghana',score:70},{name:'Sénégal',score:65},{name:'Côte d\'Ivoire',score:55},
-      {name:'Kenya',score:52},{name:'Nigeria',score:44},{name:'Éthiopie',score:35},
-      {name:'Égypte',score:22},{name:'Érythrée',score:10},{name:'Somalie',score:15}
-    ]},
-    'Asie-Pacifique': { color: '#6dd47e', countries: [
-      {name:'Nouvelle-Zélande',score:90},{name:'Australie',score:82},{name:'Japon',score:75},
-      {name:'Corée du Sud',score:73},{name:'Taïwan',score:80},{name:'Inde',score:48},
-      {name:'Thaïlande',score:42},{name:'Philippines',score:40},{name:'Myanmar',score:18},
-      {name:'Chine',score:12},{name:'Corée du Nord',score:5},{name:'Vietnam',score:20}
-    ]},
-    'Moyen-Orient': { color: '#c792ea', countries: [
-      {name:'Israël',score:58},{name:'Liban',score:50},{name:'Tunisie',score:54},
-      {name:'Jordanie',score:42},{name:'Koweït',score:45},{name:'Émirats',score:35},
-      {name:'Irak',score:30},{name:'Iran',score:20},{name:'Arabie saoudite',score:15},
-      {name:'Syrie',score:12},{name:'Yémen',score:14}
-    ]}
-  };
+  const container = document.querySelector('#hero-constellation');
+  const cW = container.getBoundingClientRect().width;
+  const W = Math.min(cW, 900);
+  const H = Math.min(W * 0.55, 420);
 
-  let allData = [];
-  const regionNames = Object.keys(regions);
-  regionNames.forEach(r => {
-    regions[r].countries.forEach(c => {
-      allData.push({ name: c.name, score: c.score, region: r, color: regions[r].color });
-    });
-  });
-  allData.sort((a,b) => b.score - a.score);
+  const svg = d3.select('#hero-constellation').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`);
 
-  // Controls
-  const controls = d3.select('#radial-controls');
-  controls.append('button').attr('class','viz-btn active').text('Tous')
-    .on('click', function() {
-      controls.selectAll('.viz-btn').classed('active', false);
-      d3.select(this).classed('active', true);
-      updateRadial(allData);
-    });
-  regionNames.forEach(r => {
-    controls.append('button').attr('class','viz-btn').text(r)
-      .on('click', function() {
-        controls.selectAll('.viz-btn').classed('active', false);
-        d3.select(this).classed('active', true);
-        const filtered = allData.filter(d => d.region === r);
-        updateRadial(filtered);
-      });
-  });
-
-  // Legend
-  const legend = d3.select('#radial-legend');
-  regionNames.forEach(r => {
-    legend.append('span').html(
-      `<span class="dot" style="background:${regions[r].color}"></span>${r}`
-    );
-  });
-
-  // SVG
-  const containerW = getWidth('#radial-chart');
-  const W = Math.min(containerW, 800);
-  const H = W;
-  const margin = 60;
-  const innerR = W * 0.12;
-  const outerR = W / 2 - margin;
-
-  const svg = d3.select('#radial-chart').append('svg')
-    .attr('viewBox', `0 0 ${W} ${H}`)
-    .append('g')
-    .attr('transform', `translate(${W/2},${H/2})`);
-
-  // Circular grid
-  [20,40,60,80,100].forEach(v => {
-    const r = innerR + (outerR - innerR) * v / 100;
-    svg.append('circle').attr('r', r)
-      .attr('fill','none').attr('stroke','#1a1a1a').attr('stroke-dasharray','2,4');
-    if (v % 20 === 0) {
-      svg.append('text').attr('x', 4).attr('y', -r - 2)
-        .attr('fill','#444').attr('font-size','9px')
-        .attr('font-family','Inter, sans-serif').text(v);
-    }
-  });
-
-  // Center label
-  svg.append('text').attr('text-anchor','middle').attr('dy','0.35em')
-    .attr('fill','#FFD682').attr('font-size','12px').attr('font-weight','600')
-    .attr('font-family','Inter, sans-serif').text('Score');
-
-  function updateRadial(data) {
-    const n = data.length;
-    const angleScale = d3.scaleBand()
-      .domain(data.map(d => d.name))
-      .range([0, 2 * Math.PI])
-      .padding(0.08);
-
-    const rScale = d3.scaleLinear()
-      .domain([0, 100])
-      .range([innerR, outerR]);
-
-    const arc = d3.arc()
-      .innerRadius(innerR)
-      .outerRadius(d => rScale(d.score))
-      .startAngle(d => angleScale(d.name))
-      .endAngle(d => angleScale(d.name) + angleScale.bandwidth())
-      .padAngle(0.01)
-      .padRadius(innerR);
-
-    const bars = svg.selectAll('.radial-bar').data(data, d => d.name);
-
-    bars.exit()
-      .transition().duration(400)
-      .attrTween('d', function(d) {
-        const interp = d3.interpolate(d.score, 0);
-        return t => {
-          d.score = interp(t);
-          return arc(d);
-        };
-      })
-      .attr('opacity', 0)
-      .remove();
-
-    const enter = bars.enter().append('path')
-      .attr('class','radial-bar')
-      .attr('fill', d => d.color)
-      .attr('opacity', 0)
-      .on('mousemove', function(evt, d) {
-        d3.select(this).attr('opacity', 1).attr('stroke','#fff').attr('stroke-width',1);
-        showTooltip(evt,
-          `<div class="tt-title">${d.name}</div>` +
-          `<div>Région : ${d.region}</div>` +
-          `<div>Score : <span class="tt-value">${d.score}/100</span></div>`
-        );
-      })
-      .on('mouseleave', function() {
-        d3.select(this).attr('opacity', 0.85).attr('stroke','none');
-        hideTooltip();
-      });
-
-    enter.merge(bars)
-      .transition().duration(800).delay((d,i) => i * 15)
-      .attr('opacity', 0.85)
-      .attrTween('d', function(d) {
-        const prev = d3.select(this).datum();
-        const prevScore = prev._prevScore || 0;
-        const interp = d3.interpolate(prevScore, d.score);
-        return t => {
-          const s = interp(t);
-          return arc({...d, score: s});
-        };
-      })
-      .each(function(d) { d._prevScore = d.score; });
-
-    // Country labels
-    svg.selectAll('.country-label').remove();
-    if (n <= 20) {
-      data.forEach(d => {
-        const angle = angleScale(d.name) + angleScale.bandwidth() / 2;
-        const r = rScale(d.score) + 14;
-        const x = r * Math.sin(angle);
-        const y = -r * Math.cos(angle);
-        const rot = (angle * 180 / Math.PI);
-        const flip = rot > 90 && rot < 270;
-        svg.append('text')
-          .attr('class','country-label')
-          .attr('x', x).attr('y', y)
-          .attr('text-anchor', flip ? 'end' : 'start')
-          .attr('transform', `rotate(${flip ? rot - 180 : rot},${x},${y})`)
-          .attr('fill','#777').attr('font-size','8px')
-          .attr('font-family','Inter, sans-serif')
-          .attr('opacity', 0)
-          .text(d.name)
-          .transition().duration(600).delay(800)
-          .attr('opacity', 1);
-      });
-    }
-  }
-
-  updateRadial(allData);
-})();
-
-// ═══════════════════════════════════════════════════════════════════
-// VIZ 2 — FORCE-DIRECTED MEDIA ECOSYSTEM GRAPH
-// ═══════════════════════════════════════════════════════════════════
-(function() {
-  const categories = {
-    'Média': '#EB2828',
-    'Outil': '#84ADDC',
-    'Thème': '#FFD682',
-    'Technique': '#6dd47e',
-    'Institution': '#c792ea'
-  };
-
-  const nodes = [
-    {id:'Data-journalisme',cat:'Technique',size:28},
-    {id:'Photojournalisme',cat:'Technique',size:22},
-    {id:'Enquête',cat:'Technique',size:20},
-    {id:'Basta!',cat:'Média',size:22},
-    {id:'STUP.MEDIA',cat:'Média',size:20},
-    {id:'RSF',cat:'Institution',size:24},
-    {id:'D3.js',cat:'Outil',size:20},
-    {id:'Python',cat:'Outil',size:22},
-    {id:'Flourish',cat:'Outil',size:18},
-    {id:'QGIS',cat:'Outil',size:16},
-    {id:'R',cat:'Outil',size:16},
-    {id:'Datawrapper',cat:'Outil',size:16},
-    {id:'Liberté presse',cat:'Thème',size:22},
-    {id:'Droits humains',cat:'Thème',size:18},
-    {id:'Écologie',cat:'Thème',size:16},
-    {id:'Justice sociale',cat:'Thème',size:18},
-    {id:'Antifascisme',cat:'Thème',size:16},
-    {id:'Open data',cat:'Thème',size:18},
-    {id:'Scraping',cat:'Technique',size:16},
-    {id:'Cartographie',cat:'Technique',size:16},
-    {id:'Visualisation',cat:'Technique',size:20},
-    {id:'Analyse données',cat:'Technique',size:18},
-    {id:'Automédia',cat:'Thème',size:16},
-    {id:'GitHub',cat:'Outil',size:14},
-  ];
-
-  const links = [
-    {source:'Data-journalisme',target:'D3.js',strength:3},
-    {source:'Data-journalisme',target:'Python',strength:3},
-    {source:'Data-journalisme',target:'Flourish',strength:2},
-    {source:'Data-journalisme',target:'Visualisation',strength:3},
-    {source:'Data-journalisme',target:'Analyse données',strength:3},
-    {source:'Data-journalisme',target:'Open data',strength:2},
-    {source:'Data-journalisme',target:'Basta!',strength:2},
-    {source:'Data-journalisme',target:'STUP.MEDIA',strength:2},
-    {source:'Data-journalisme',target:'RSF',strength:3},
-    {source:'Photojournalisme',target:'Basta!',strength:1},
-    {source:'Photojournalisme',target:'Droits humains',strength:1},
-    {source:'Enquête',target:'Basta!',strength:2},
-    {source:'Enquête',target:'Justice sociale',strength:2},
-    {source:'Enquête',target:'Antifascisme',strength:1},
-    {source:'RSF',target:'Liberté presse',strength:3},
-    {source:'RSF',target:'Droits humains',strength:2},
-    {source:'Basta!',target:'Justice sociale',strength:2},
-    {source:'Basta!',target:'Écologie',strength:2},
-    {source:'Basta!',target:'Antifascisme',strength:2},
-    {source:'STUP.MEDIA',target:'Justice sociale',strength:1},
-    {source:'D3.js',target:'Visualisation',strength:3},
-    {source:'Python',target:'Scraping',strength:2},
-    {source:'Python',target:'Analyse données',strength:3},
-    {source:'QGIS',target:'Cartographie',strength:3},
-    {source:'R',target:'Analyse données',strength:2},
-    {source:'Datawrapper',target:'Visualisation',strength:2},
-    {source:'Flourish',target:'Visualisation',strength:2},
-    {source:'Scraping',target:'Open data',strength:2},
-    {source:'Cartographie',target:'Visualisation',strength:2},
-    {source:'Automédia',target:'Justice sociale',strength:2},
-    {source:'Automédia',target:'Open data',strength:1},
-    {source:'GitHub',target:'Open data',strength:1},
-    {source:'GitHub',target:'D3.js',strength:1},
-    {source:'Liberté presse',target:'Droits humains',strength:2},
-  ];
-
-  // Legend
-  const fLegend = d3.select('#force-legend');
-  Object.entries(categories).forEach(([cat, col]) => {
-    fLegend.append('span').html(
-      `<span class="dot" style="background:${col}"></span>${cat}`
-    );
-  });
-
-  const cW = getWidth('#force-graph');
-  const fW = Math.min(cW, 900);
-  const fH = Math.min(fW * 0.7, 550);
-
-  const fSvg = d3.select('#force-graph').append('svg')
-    .attr('viewBox', `0 0 ${fW} ${fH}`);
-
-  // Glow filter
-  const defs = fSvg.append('defs');
-  const filter = defs.append('filter').attr('id','glow');
-  filter.append('feGaussianBlur').attr('stdDeviation','3').attr('result','blur');
-  filter.append('feMerge').selectAll('feMergeNode')
+  // Defs
+  const defs = svg.append('defs');
+  const glow = defs.append('filter').attr('id','glow');
+  glow.append('feGaussianBlur').attr('stdDeviation','4').attr('result','blur');
+  glow.append('feMerge').selectAll('feMergeNode')
     .data(['blur','SourceGraphic']).enter()
     .append('feMergeNode').attr('in', d => d);
 
+  // Background stars
+  for (let i = 0; i < 80; i++) {
+    svg.append('circle')
+      .attr('cx', Math.random() * W).attr('cy', Math.random() * H)
+      .attr('r', Math.random() * 1.2)
+      .attr('fill', '#fff')
+      .attr('opacity', 0.1 + Math.random() * 0.3);
+  }
+
+  // Nodes: center = portfolio, around = projects
+  const projects = [
+    { id: 'RSF', label: 'RSF\nLiberté presse', color: '#c30000', r: 28, anchor: '#proj-rsf' },
+    { id: 'Basta!', label: 'Basta!\nEnquêtes', color: '#EB2828', r: 24, anchor: '#proj-basta' },
+    { id: 'STUP', label: 'STUP.MEDIA\nJournalisme', color: '#FFD682', r: 22, anchor: '#proj-stup' },
+    { id: 'Automédia', label: 'Automédia-\nthèque', color: '#6dd47e', r: 22, anchor: '#proj-auto' },
+    { id: 'FEA', label: 'Fait Entrer\nl\'Accusé', color: '#c792ea', r: 20, anchor: '#proj-fea' },
+  ];
+
+  const tools = [
+    { id: 'Python', color: '#4B8BBE', r: 12 },
+    { id: 'D3.js', color: '#f9a03c', r: 12 },
+    { id: 'QGIS', color: '#93b023', r: 10 },
+    { id: 'Flourish', color: '#e06c75', r: 10 },
+    { id: 'R', color: '#276DC3', r: 10 },
+    { id: 'Scraping', color: '#56b6c2', r: 10 },
+  ];
+
+  const center = { id: 'Portfolio', label: 'Côme Nottaris\nData-visualisation', color: '#84ADDC', r: 36, fx: W/2, fy: H/2 };
+
+  const nodes = [center, ...projects, ...tools];
+  const links = [];
+
+  // Link center to all projects
+  projects.forEach(p => links.push({ source: 'Portfolio', target: p.id, strength: 0.8 }));
+  // Link tools to center
+  tools.forEach(t => links.push({ source: 'Portfolio', target: t.id, strength: 0.3 }));
+  // Some project-tool links
+  links.push({ source: 'RSF', target: 'Python', strength: 0.5 });
+  links.push({ source: 'RSF', target: 'D3.js', strength: 0.4 });
+  links.push({ source: 'Automédia', target: 'Scraping', strength: 0.4 });
+  links.push({ source: 'Basta!', target: 'Python', strength: 0.3 });
+  links.push({ source: 'RSF', target: 'R', strength: 0.3 });
+  links.push({ source: 'RSF', target: 'QGIS', strength: 0.3 });
+  links.push({ source: 'Basta!', target: 'Flourish', strength: 0.3 });
+  links.push({ source: 'STUP', target: 'Flourish', strength: 0.3 });
+
   const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(d => 100 - d.strength * 10))
-    .force('charge', d3.forceManyBody().strength(-200))
-    .force('center', d3.forceCenter(fW / 2, fH / 2))
-    .force('collision', d3.forceCollide().radius(d => d.size + 5))
-    .force('x', d3.forceX(fW / 2).strength(0.05))
-    .force('y', d3.forceY(fH / 2).strength(0.05));
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => d.strength > 0.5 ? 90 : 130))
+    .force('charge', d3.forceManyBody().strength(d => d.id === 'Portfolio' ? -400 : -150))
+    .force('center', d3.forceCenter(W/2, H/2))
+    .force('collision', d3.forceCollide().radius(d => d.r + 8))
+    .force('x', d3.forceX(W/2).strength(0.06))
+    .force('y', d3.forceY(H/2).strength(0.06));
 
-  const link = fSvg.append('g').selectAll('line')
+  const link = svg.append('g').selectAll('line')
     .data(links).enter().append('line')
-    .attr('stroke', '#333')
-    .attr('stroke-width', d => d.strength * 0.6)
-    .attr('stroke-opacity', 0.5);
+    .attr('stroke', '#1a2a44')
+    .attr('stroke-width', d => d.strength > 0.5 ? 1.5 : 0.8)
+    .attr('stroke-opacity', 0.6);
 
-  const node = fSvg.append('g').selectAll('g')
+  const nodeG = svg.append('g').selectAll('g')
     .data(nodes).enter().append('g')
+    .attr('cursor', d => d.anchor ? 'pointer' : 'default')
+    .on('click', (evt, d) => {
+      if (d.anchor) {
+        document.querySelector(d.anchor).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    })
     .call(d3.drag()
       .on('start', (evt, d) => {
         if (!evt.active) simulation.alphaTarget(0.3).restart();
@@ -529,307 +476,476 @@ function getWidth(sel) {
       .on('drag', (evt, d) => { d.fx = evt.x; d.fy = evt.y; })
       .on('end', (evt, d) => {
         if (!evt.active) simulation.alphaTarget(0);
-        d.fx = null; d.fy = null;
+        if (d.id !== 'Portfolio') { d.fx = null; d.fy = null; }
       })
     );
 
-  node.append('circle')
-    .attr('r', d => d.size)
-    .attr('fill', d => categories[d.cat])
-    .attr('fill-opacity', 0.2)
-    .attr('stroke', d => categories[d.cat])
-    .attr('stroke-width', 1.5)
-    .attr('filter','url(#glow)')
+  // Circles
+  nodeG.append('circle')
+    .attr('r', d => d.r)
+    .attr('fill', d => d.color)
+    .attr('fill-opacity', d => d.id === 'Portfolio' ? 0.25 : 0.15)
+    .attr('stroke', d => d.color)
+    .attr('stroke-width', d => d.id === 'Portfolio' ? 2 : 1.2)
+    .attr('filter', 'url(#glow)')
     .on('mousemove', function(evt, d) {
-      d3.select(this).attr('fill-opacity', 0.5).attr('stroke-width', 3);
-      // Highlight connected
-      link.attr('stroke', l =>
-        (l.source.id === d.id || l.target.id === d.id) ? categories[d.cat] : '#222'
-      ).attr('stroke-opacity', l =>
-        (l.source.id === d.id || l.target.id === d.id) ? 0.9 : 0.15
-      );
-      const connections = links.filter(l => l.source.id === d.id || l.target.id === d.id)
-        .map(l => l.source.id === d.id ? l.target.id : l.source.id);
-      showTooltip(evt,
-        `<div class="tt-title">${d.id}</div>` +
-        `<div>Catégorie : <span class="tt-value">${d.cat}</span></div>` +
-        `<div>Connexions : ${connections.join(', ')}</div>`
-      );
+      d3.select(this).attr('fill-opacity', d.id === 'Portfolio' ? 0.4 : 0.35)
+        .attr('stroke-width', 3);
+      link.attr('stroke', l => (l.source.id === d.id || l.target.id === d.id) ? d.color : '#111')
+        .attr('stroke-opacity', l => (l.source.id === d.id || l.target.id === d.id) ? 1 : 0.15);
+      const ttContent = d.anchor
+        ? `<div class="tt-title">${d.id}</div><div>Cliquez pour voir le projet</div>`
+        : `<div class="tt-title">${d.id}</div>`;
+      showTooltip(evt, ttContent);
     })
-    .on('mouseleave', function() {
-      d3.select(this).attr('fill-opacity', 0.2).attr('stroke-width', 1.5);
-      link.attr('stroke','#333').attr('stroke-opacity', 0.5);
+    .on('mouseleave', function(evt, d) {
+      d3.select(this).attr('fill-opacity', d.id === 'Portfolio' ? 0.25 : 0.15)
+        .attr('stroke-width', d.id === 'Portfolio' ? 2 : 1.2);
+      link.attr('stroke', '#1a2a44').attr('stroke-opacity', 0.6);
       hideTooltip();
     });
 
-  node.append('text')
-    .attr('class','node-label')
-    .attr('dy', d => d.size + 12)
-    .text(d => d.id);
-
-  simulation.on('tick', () => {
-    link
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-    node.attr('transform', d => `translate(${d.x},${d.y})`);
-  });
-})();
-
-// ═══════════════════════════════════════════════════════════════════
-// VIZ 3 — BAR CHART RACE
-// ═══════════════════════════════════════════════════════════════════
-(function() {
-  const years = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
-  const items = [
-    {name:'Norvège',color:'#84ADDC'},
-    {name:'Danemark',color:'#6dd47e'},
-    {name:'Suède',color:'#FFD682'},
-    {name:'Finlande',color:'#c792ea'},
-    {name:'Pays-Bas',color:'#EB2828'},
-    {name:'Costa Rica',color:'#ff8c42'},
-    {name:'Suisse',color:'#e06c75'},
-    {name:'Nouvelle-Zélande',color:'#56b6c2'},
-    {name:'Portugal',color:'#d19a66'},
-    {name:'Irlande',color:'#98c379'},
-  ];
-  // Simulated scores per year — base 75–95, drift ±4/year, clamped [60,100]
-  const data = {};
-  items.forEach(item => {
-    data[item.name] = {};
-    let base = 75 + Math.random() * 20;
-    years.forEach(y => {
-      base += (Math.random() - 0.45) * 4;
-      base = Math.max(60, Math.min(100, base));
-      data[item.name][y] = Math.round(base * 10) / 10;
+  // Labels
+  nodeG.each(function(d) {
+    const g = d3.select(this);
+    const lines = (d.label || d.id).split('\n');
+    const fontSize = d.id === 'Portfolio' ? 10 : (d.r > 15 ? 8 : 7);
+    lines.forEach((line, i) => {
+      g.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', (i - (lines.length - 1) / 2) * (fontSize + 2))
+        .attr('fill', '#ccc')
+        .attr('font-size', fontSize + 'px')
+        .attr('font-family', 'Inter, sans-serif')
+        .attr('font-weight', d.id === 'Portfolio' ? '600' : '400')
+        .attr('pointer-events', 'none')
+        .text(line);
     });
   });
 
-  const bW = Math.min(getWidth('#bar-race'), 800);
-  const barH = 28;
-  const bMargin = {top: 40, right: 80, bottom: 20, left: 130};
-  const bH = items.length * (barH + 6) + bMargin.top + bMargin.bottom;
-  const topN = items.length;
-
-  const bSvg = d3.select('#bar-race').append('svg')
-    .attr('viewBox', `0 0 ${bW} ${bH}`);
-
-  const xScale = d3.scaleLinear()
-    .domain([0, 100])
-    .range([bMargin.left, bW - bMargin.right]);
-
-  // Year display
-  const yearText = bSvg.append('text')
-    .attr('x', bW - bMargin.right - 10)
-    .attr('y', bH - 10)
-    .attr('text-anchor','end')
-    .attr('fill','#1a1a1a')
-    .attr('font-size','60px')
-    .attr('font-weight','700')
-    .attr('font-family','Inter, sans-serif')
-    .text(years[0]);
-
-  // Axis
-  bSvg.append('g')
-    .attr('transform',`translate(0,${bMargin.top - 5})`)
-    .call(d3.axisTop(xScale).ticks(5).tickSize(0))
-    .call(g => g.select('.domain').remove())
-    .call(g => g.selectAll('text').attr('fill','#555').attr('font-size','10px'));
-
-  // Grid lines
-  bSvg.append('g').selectAll('line')
-    .data(xScale.ticks(5)).enter().append('line')
-    .attr('x1', d => xScale(d)).attr('x2', d => xScale(d))
-    .attr('y1', bMargin.top).attr('y2', bH - bMargin.bottom)
-    .attr('stroke','#111').attr('stroke-dasharray','3,3');
-
-  let currentStep = 0;
-  let playing = false;
-  let interval;
-
-  function renderYear(yearIdx, animate) {
-    const year = years[yearIdx];
-    yearText.text(year);
-
-    const ranked = items.map(item => ({
-      ...item,
-      value: data[item.name][year]
-    })).sort((a,b) => b.value - a.value);
-
-    const dur = animate ? 600 : 0;
-
-    // Bars
-    const bars = bSvg.selectAll('.race-bar').data(ranked, d => d.name);
-    bars.enter().append('rect').attr('class','race-bar')
-      .attr('x', xScale(0))
-      .attr('height', barH)
-      .attr('rx', 4)
-      .attr('fill', d => d.color)
-      .attr('fill-opacity', 0.7)
-      .merge(bars)
-      .transition().duration(dur).ease(d3.easeQuadInOut)
-      .attr('y', (d,i) => bMargin.top + i * (barH + 6))
-      .attr('width', d => xScale(d.value) - xScale(0));
-
-    // Labels
-    const labels = bSvg.selectAll('.race-label').data(ranked, d => d.name);
-    labels.enter().append('text').attr('class','race-label')
-      .attr('fill','#ccc').attr('font-size','11px').attr('font-weight','600')
-      .attr('font-family','Inter, sans-serif')
-      .attr('text-anchor','end')
-      .merge(labels)
-      .transition().duration(dur).ease(d3.easeQuadInOut)
-      .attr('x', bMargin.left - 8)
-      .attr('y', (d,i) => bMargin.top + i * (barH + 6) + barH / 2 + 4)
-      .text(d => d.name);
-
-    // Values
-    const vals = bSvg.selectAll('.race-value').data(ranked, d => d.name);
-    vals.enter().append('text').attr('class','race-value')
-      .attr('fill','#fff').attr('font-size','11px').attr('font-weight','600')
-      .attr('font-family','Inter, sans-serif')
-      .merge(vals)
-      .transition().duration(dur).ease(d3.easeQuadInOut)
-      .attr('x', d => xScale(d.value) + 6)
-      .attr('y', (d,i) => bMargin.top + i * (barH + 6) + barH / 2 + 4)
-      .tween('text', function(d) {
-        const prev = parseFloat(this.textContent) || 0;
-        const interp = d3.interpolateNumber(prev, d.value);
-        return t => { this.textContent = interp(t).toFixed(1); };
-      });
-  }
-
-  renderYear(0, false);
-
-  d3.select('#race-play').on('click', function() {
-    if (playing) {
-      clearInterval(interval);
-      playing = false;
-      d3.select(this).text('▶ Lancer');
-      return;
-    }
-    playing = true;
-    d3.select(this).text('⏸ Pause');
-    if (currentStep >= years.length - 1) currentStep = 0;
-    interval = setInterval(() => {
-      currentStep++;
-      if (currentStep >= years.length) {
-        clearInterval(interval);
-        playing = false;
-        d3.select('#race-play').text('▶ Lancer');
-        return;
-      }
-      renderYear(currentStep, true);
-    }, 1200);
-  });
-
-  d3.select('#race-reset').on('click', () => {
-    clearInterval(interval);
-    playing = false;
-    currentStep = 0;
-    d3.select('#race-play').text('▶ Lancer');
-    renderYear(0, true);
+  simulation.on('tick', () => {
+    link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeG.attr('transform', d => `translate(${d.x},${d.y})`);
   });
 })();
 
 // ═══════════════════════════════════════════════════════════════════
-// VIZ 4 — PARTICLE FLOW
+// VIZ 1 — RSF: Press freedom horizontal bar chart by region
 // ═══════════════════════════════════════════════════════════════════
 (function() {
-  const pW = Math.min(getWidth('#particle-flow'), 900);
-  const pH = 320;
-  const pSvg = d3.select('#particle-flow').append('svg')
-    .attr('viewBox', `0 0 ${pW} ${pH}`);
+  const regions = [
+    { name: 'Europe du Nord', score: 90, detail: 'Norvège, Danemark, Suède, Finlande — les mieux classés au monde' },
+    { name: 'Europe de l\'Ouest', score: 78, detail: 'France, Allemagne, Belgique, Pays-Bas — globalement libre mais des tensions' },
+    { name: 'Amériques (Nord)', score: 73, detail: 'Canada, États-Unis — sous pression croissante' },
+    { name: 'Amériques (Sud)', score: 55, detail: 'Brésil, Colombie, Argentine — contextes très variés' },
+    { name: 'Afrique subsah.', score: 48, detail: 'Sénégal, Ghana, Kenya — en progression inégale' },
+    { name: 'Asie-Pacifique', score: 42, detail: 'Japon, Corée du Sud, Inde — disparités majeures' },
+    { name: 'Europe de l\'Est', score: 38, detail: 'Pologne, Hongrie, Turquie — recul des libertés' },
+    { name: 'Moyen-Orient', score: 25, detail: 'Liban, Jordanie, Irak — situations très difficiles' },
+    { name: 'Afrique du Nord', score: 22, detail: 'Égypte, Algérie, Maroc — forte censure' },
+    { name: 'Asie centrale', score: 18, detail: 'Chine, Vietnam, Myanmar — les pires scores mondiaux' },
+  ];
 
-  // Background gradient
-  const pDefs = pSvg.append('defs');
-  const grad = pDefs.append('linearGradient').attr('id','flowGrad')
-    .attr('x1','0%').attr('x2','100%');
-  grad.append('stop').attr('offset','0%').attr('stop-color','#0a0a15');
-  grad.append('stop').attr('offset','50%').attr('stop-color','#0a1020');
-  grad.append('stop').attr('offset','100%').attr('stop-color','#0a0a15');
+  const margin = { top: 30, right: 60, bottom: 10, left: 130 };
+  const cW = getWidth('#viz-rsf');
+  const W = Math.min(cW, 700);
+  const barH = 26;
+  const H = regions.length * (barH + 8) + margin.top + margin.bottom;
 
-  pSvg.append('rect').attr('width',pW).attr('height',pH).attr('fill','url(#flowGrad)');
+  const svg = d3.select('#viz-rsf').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`);
 
-  // Flow paths
-  const nPaths = 5;
-  const paths = [];
-  for (let i = 0; i < nPaths; i++) {
-    const yBase = pH * (i + 1) / (nPaths + 1);
-    const pts = [];
-    for (let x = 0; x <= pW; x += pW / 8) {
-      pts.push([x, yBase + (Math.random() - 0.5) * 60]);
-    }
-    const line = d3.line().curve(d3.curveBasis);
-    const pathStr = line(pts);
-    pSvg.append('path')
-      .attr('d', pathStr)
-      .attr('fill','none')
-      .attr('stroke','#182040')
-      .attr('stroke-width', 1);
-    paths.push(pathStr);
-  }
+  const x = d3.scaleLinear().domain([0, 100]).range([margin.left, W - margin.right]);
+  const y = d3.scaleBand().domain(regions.map(d => d.name)).range([margin.top, H - margin.bottom]).padding(0.25);
 
-  const colors = ['#84ADDC','#EB2828','#FFD682','#6dd47e','#c792ea','#56b6c2','#ff8c42'];
-  const particles = [];
-  const maxParticles = 60; // cap for performance
+  // Color scale: green = good, red = bad
+  const colorScale = d3.scaleLinear()
+    .domain([0, 50, 100])
+    .range(['#c30000', '#FFD682', '#6dd47e']);
 
-  function spawnParticle() {
-    if (particles.length >= maxParticles) return;
-    const pathIdx = Math.floor(Math.random() * nPaths);
-    const pathEl = pSvg.append('circle')
-      .attr('r', 1.5 + Math.random() * 2.5)
-      .attr('fill', colors[Math.floor(Math.random() * colors.length)])
-      .attr('opacity', 0.7 + Math.random() * 0.3);
-    const speed = 3000 + Math.random() * 5000;
-    const p = { el: pathEl, pathIdx: pathIdx, t: 0, speed: speed, alive: true };
-    particles.push(p);
+  // Grid
+  svg.append('g').selectAll('line')
+    .data([20, 40, 60, 80, 100]).enter().append('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', margin.top).attr('y2', H - margin.bottom)
+    .attr('stroke', '#111').attr('stroke-dasharray', '2,3');
 
-    // Create a hidden path element for measurement
-    const measurePath = pSvg.append('path')
-      .attr('d', paths[pathIdx])
-      .attr('fill','none').attr('stroke','none');
+  // Axis labels
+  svg.append('g').selectAll('text')
+    .data([0, 20, 40, 60, 80, 100]).enter().append('text')
+    .attr('x', d => x(d)).attr('y', margin.top - 8)
+    .attr('text-anchor', 'middle').attr('fill', '#555')
+    .attr('font-size', '9px').attr('font-family', 'Inter, sans-serif')
+    .text(d => d);
 
-    const totalLen = measurePath.node().getTotalLength();
-    const startOffset = Math.random() * 0.2;
+  // Bars
+  svg.selectAll('.rsf-bar')
+    .data(regions).enter().append('rect')
+    .attr('class', 'rsf-bar')
+    .attr('x', x(0)).attr('y', d => y(d.name))
+    .attr('height', y.bandwidth())
+    .attr('width', 0)
+    .attr('rx', 3)
+    .attr('fill', d => colorScale(d.score))
+    .attr('fill-opacity', 0.8)
+    .on('mousemove', function(evt, d) {
+      d3.select(this).attr('fill-opacity', 1);
+      showTooltip(evt,
+        `<div class="tt-title">${d.name}</div>` +
+        `<div>Score : <span class="tt-value">${d.score}/100</span></div>` +
+        `<div style="margin-top:4px;color:#999;">${d.detail}</div>`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).attr('fill-opacity', 0.8);
+      hideTooltip();
+    })
+    .transition().duration(1000).delay((d, i) => i * 80)
+    .attr('width', d => x(d.score) - x(0));
 
-    function animate() {
-      if (!p.alive) return;
-      p.t += 16 / p.speed;
-      if (p.t >= 1) {
-        p.alive = false;
-        pathEl.remove();
-        measurePath.remove();
-        const idx = particles.indexOf(p);
-        if (idx > -1) particles.splice(idx, 1);
-        return;
-      }
-      const pt = measurePath.node().getPointAtLength((startOffset + p.t * (1 - startOffset)) * totalLen);
-      const jitter = (Math.random() - 0.5) * 4;
-      pathEl.attr('cx', pt.x).attr('cy', pt.y + jitter);
-      // Opacity: fade-in first 10%, steady 80%, fade-out last 15%
-      pathEl.attr('opacity', p.t < 0.1 ? p.t * 10 : p.t > 0.85 ? (1 - p.t) * 6.67 : 0.8);
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
+  // Labels
+  svg.selectAll('.rsf-label')
+    .data(regions).enter().append('text')
+    .attr('x', margin.left - 6).attr('y', d => y(d.name) + y.bandwidth() / 2 + 4)
+    .attr('text-anchor', 'end').attr('fill', '#aaa')
+    .attr('font-size', '10px').attr('font-family', 'Inter, sans-serif')
+    .text(d => d.name);
 
-  // Spawn particles continuously
-  function spawnLoop() {
-    spawnParticle();
-    spawnParticle();
-    setTimeout(spawnLoop, 150 + Math.random() * 200);
-  }
+  // Score values
+  svg.selectAll('.rsf-val')
+    .data(regions).enter().append('text')
+    .attr('x', d => x(d.score) + 5).attr('y', d => y(d.name) + y.bandwidth() / 2 + 4)
+    .attr('fill', '#fff').attr('font-size', '10px').attr('font-weight', '600')
+    .attr('font-family', 'Inter, sans-serif')
+    .attr('opacity', 0)
+    .text(d => d.score)
+    .transition().duration(400).delay((d, i) => 1000 + i * 80)
+    .attr('opacity', 1);
+})();
 
-  // Only start when visible
+// ═══════════════════════════════════════════════════════════════════
+// VIZ 2 — Basta!: Thematic coverage treemap
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const themes = {
+    name: 'Basta!',
+    children: [
+      { name: 'Justice sociale', value: 30, desc: 'Enquêtes sur les inégalités, mouvements sociaux' },
+      { name: 'Antifascisme', value: 22, desc: 'Enquêtes sur les mouvements d\'extrême-droite' },
+      { name: 'Écologie', value: 18, desc: 'Enjeux environnementaux, climat, transition' },
+      { name: 'Droits humains', value: 16, desc: 'Migrations, libertés fondamentales, répression' },
+      { name: 'Politique', value: 14, desc: 'Analyse politique, institutions, démocratie' },
+    ]
+  };
+
+  const cW = getWidth('#viz-basta');
+  const W = Math.min(cW, 700);
+  const H = 220;
+  const colors = { 'Justice sociale': '#EB2828', 'Antifascisme': '#c30000', 'Écologie': '#6dd47e', 'Droits humains': '#FFD682', 'Politique': '#84ADDC' };
+
+  const svg = d3.select('#viz-basta').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`);
+
+  const root = d3.hierarchy(themes).sum(d => d.value);
+  d3.treemap().size([W, H]).padding(3).round(true)(root);
+
+  const cell = svg.selectAll('g')
+    .data(root.leaves()).enter().append('g')
+    .attr('transform', d => `translate(${d.x0},${d.y0})`);
+
+  cell.append('rect')
+    .attr('width', d => d.x1 - d.x0)
+    .attr('height', d => d.y1 - d.y0)
+    .attr('rx', 4)
+    .attr('fill', d => colors[d.data.name] || '#333')
+    .attr('fill-opacity', 0)
+    .attr('stroke', d => colors[d.data.name] || '#333')
+    .attr('stroke-opacity', 0.5)
+    .on('mousemove', function(evt, d) {
+      d3.select(this).attr('fill-opacity', 0.4).attr('stroke-opacity', 1);
+      showTooltip(evt,
+        `<div class="tt-title">${d.data.name}</div>` +
+        `<div style="color:#999;">${d.data.desc}</div>`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).attr('fill-opacity', 0.2).attr('stroke-opacity', 0.5);
+      hideTooltip();
+    })
+    .transition().duration(800).delay((d, i) => i * 100)
+    .attr('fill-opacity', 0.2);
+
+  cell.append('text')
+    .attr('x', 8).attr('y', 20)
+    .attr('fill', '#fff').attr('font-size', '11px').attr('font-weight', '600')
+    .attr('font-family', 'Inter, sans-serif')
+    .text(d => d.data.name)
+    .attr('opacity', 0)
+    .transition().duration(400).delay((d, i) => 800 + i * 100)
+    .attr('opacity', 1);
+
+  cell.append('text')
+    .attr('x', 8).attr('y', 36)
+    .attr('fill', '#888').attr('font-size', '9px')
+    .attr('font-family', 'Inter, sans-serif')
+    .text(d => d.data.desc.substring(0, 35) + (d.data.desc.length > 35 ? '…' : ''))
+    .attr('opacity', 0)
+    .transition().duration(400).delay((d, i) => 1000 + i * 100)
+    .attr('opacity', 1);
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// VIZ 3 — STUP.MEDIA: Article types donut
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const data = [
+    { type: 'Enquêtes', count: 5, color: '#FFD682' },
+    { type: 'Reportages', count: 4, color: '#EB2828' },
+    { type: 'Analyses', count: 3, color: '#84ADDC' },
+    { type: 'Interviews', count: 2, color: '#6dd47e' },
+  ];
+
+  const cW = getWidth('#viz-stup');
+  const W = Math.min(cW, 400);
+  const H = 200;
+  const radius = Math.min(W, H) / 2 - 20;
+
+  const svg = d3.select('#viz-stup').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .append('g')
+    .attr('transform', `translate(${W/2},${H/2})`);
+
+  const pie = d3.pie().value(d => d.count).sort(null).padAngle(0.04);
+  const arc = d3.arc().innerRadius(radius * 0.55).outerRadius(radius);
+  const arcHover = d3.arc().innerRadius(radius * 0.55).outerRadius(radius + 6);
+
+  const arcs = svg.selectAll('path')
+    .data(pie(data)).enter().append('path')
+    .attr('fill', d => d.data.color)
+    .attr('fill-opacity', 0.7)
+    .attr('stroke', '#050508')
+    .attr('stroke-width', 2)
+    .attr('d', d3.arc().innerRadius(radius * 0.55).outerRadius(radius * 0.55))
+    .on('mousemove', function(evt, d) {
+      d3.select(this).transition().duration(150).attr('d', arcHover).attr('fill-opacity', 1);
+      showTooltip(evt,
+        `<div class="tt-title">${d.data.type}</div>` +
+        `<div><span class="tt-value">${d.data.count}</span> articles</div>`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).transition().duration(150).attr('d', arc).attr('fill-opacity', 0.7);
+      hideTooltip();
+    })
+    .transition().duration(800).delay((d, i) => i * 150)
+    .attrTween('d', function(d) {
+      const interp = d3.interpolate({ startAngle: d.startAngle, endAngle: d.startAngle }, d);
+      return t => arc(interp(t));
+    });
+
+  // Center text
+  svg.append('text').attr('text-anchor', 'middle').attr('dy', '-0.2em')
+    .attr('fill', '#fff').attr('font-size', '18px').attr('font-weight', '700')
+    .attr('font-family', 'Inter, sans-serif')
+    .text(data.reduce((s, d) => s + d.count, 0));
+  svg.append('text').attr('text-anchor', 'middle').attr('dy', '1.2em')
+    .attr('fill', '#888').attr('font-size', '10px')
+    .attr('font-family', 'Inter, sans-serif')
+    .text('articles');
+
+  // Legend beside donut
+  const legend = svg.append('g').attr('transform', `translate(${radius + 24}, ${-data.length * 10})`);
+  data.forEach((d, i) => {
+    const g = legend.append('g').attr('transform', `translate(0, ${i * 22})`);
+    g.append('circle').attr('r', 5).attr('fill', d.color).attr('fill-opacity', 0.8);
+    g.append('text').attr('x', 12).attr('dy', '0.35em')
+      .attr('fill', '#aaa').attr('font-size', '10px')
+      .attr('font-family', 'Inter, sans-serif')
+      .text(`${d.type} (${d.count})`);
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// VIZ 4 — Automédiathèque: Category bubble chart
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const categories = [
+    { name: 'Info locale', count: 35, color: '#6dd47e' },
+    { name: 'Politique', count: 28, color: '#84ADDC' },
+    { name: 'Social', count: 24, color: '#EB2828' },
+    { name: 'Écologie', count: 20, color: '#98c379' },
+    { name: 'Culture', count: 18, color: '#FFD682' },
+    { name: 'International', count: 15, color: '#c792ea' },
+    { name: 'Éducation', count: 12, color: '#56b6c2' },
+    { name: 'Tech / Hacktivisme', count: 10, color: '#e06c75' },
+    { name: 'Féminisme', count: 9, color: '#ff8c42' },
+    { name: 'Médias libres', count: 8, color: '#d19a66' },
+  ];
+
+  const cW = getWidth('#viz-auto');
+  const W = Math.min(cW, 600);
+  const H = 260;
+
+  const svg = d3.select('#viz-auto').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`);
+
+  const pack = d3.pack()
+    .size([W, H])
+    .padding(6);
+
+  const root = d3.hierarchy({ children: categories })
+    .sum(d => d.count);
+
+  pack(root);
+
+  const node = svg.selectAll('g')
+    .data(root.leaves()).enter().append('g')
+    .attr('transform', d => `translate(${d.x},${d.y})`);
+
+  node.append('circle')
+    .attr('r', 0)
+    .attr('fill', d => d.data.color)
+    .attr('fill-opacity', 0.15)
+    .attr('stroke', d => d.data.color)
+    .attr('stroke-width', 1.2)
+    .on('mousemove', function(evt, d) {
+      d3.select(this).attr('fill-opacity', 0.4).attr('stroke-width', 2.5);
+      showTooltip(evt,
+        `<div class="tt-title">${d.data.name}</div>` +
+        `<div><span class="tt-value">${d.data.count}</span> automédias recensés</div>`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).attr('fill-opacity', 0.15).attr('stroke-width', 1.2);
+      hideTooltip();
+    })
+    .transition().duration(800).delay((d, i) => i * 60)
+    .attr('r', d => d.r);
+
+  node.append('text')
+    .attr('text-anchor', 'middle').attr('dy', '-0.2em')
+    .attr('fill', '#ddd').attr('font-size', d => Math.max(8, d.r / 3.5) + 'px')
+    .attr('font-weight', '600')
+    .attr('font-family', 'Inter, sans-serif')
+    .attr('pointer-events', 'none')
+    .text(d => d.data.name)
+    .attr('opacity', 0)
+    .transition().duration(400).delay((d, i) => 800 + i * 60)
+    .attr('opacity', 1);
+
+  node.append('text')
+    .attr('text-anchor', 'middle').attr('dy', '1em')
+    .attr('fill', '#888').attr('font-size', d => Math.max(7, d.r / 4) + 'px')
+    .attr('font-family', 'Inter, sans-serif')
+    .attr('pointer-events', 'none')
+    .text(d => d.data.count)
+    .attr('opacity', 0)
+    .transition().duration(400).delay((d, i) => 900 + i * 60)
+    .attr('opacity', 1);
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// VIZ 5 — FEA: Horizontal categories breakdown
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const data = [
+    { cat: 'Meurtres', count: 42, color: '#c792ea' },
+    { cat: 'Affaires familiales', count: 28, color: '#84ADDC' },
+    { cat: 'Disparitions', count: 18, color: '#FFD682' },
+    { cat: 'Cold cases', count: 15, color: '#6dd47e' },
+    { cat: 'Affaires médiatiques', count: 12, color: '#EB2828' },
+  ];
+  const total = data.reduce((s, d) => s + d.count, 0);
+
+  const cW = getWidth('#viz-fea');
+  const W = Math.min(cW, 600);
+  const H = 50;
+
+  const svg = d3.select('#viz-fea').append('svg')
+    .attr('viewBox', `0 0 ${W} ${H}`);
+
+  const x = d3.scaleLinear().domain([0, total]).range([0, W]);
+  let cumul = 0;
+
+  const bars = svg.selectAll('g')
+    .data(data).enter().append('g');
+
+  bars.append('rect')
+    .attr('x', d => { const xPos = x(cumul); cumul += d.count; return xPos; })
+    .attr('y', 0).attr('height', 30)
+    .attr('width', 0)
+    .attr('fill', d => d.color)
+    .attr('fill-opacity', 0.7)
+    .on('mousemove', function(evt, d) {
+      d3.select(this).attr('fill-opacity', 1);
+      showTooltip(evt,
+        `<div class="tt-title">${d.cat}</div>` +
+        `<div><span class="tt-value">${d.count}</span> épisodes (${Math.round(d.count / total * 100)}%)</div>`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).attr('fill-opacity', 0.7);
+      hideTooltip();
+    })
+    .transition().duration(800).delay((d, i) => i * 120)
+    .attr('width', d => x(d.count));
+
+  // Reset cumul for labels
+  cumul = 0;
+  bars.append('text')
+    .attr('x', d => { const xPos = x(cumul + d.count / 2); cumul += d.count; return xPos; })
+    .attr('y', 44).attr('text-anchor', 'middle')
+    .attr('fill', '#888').attr('font-size', '8px')
+    .attr('font-family', 'Inter, sans-serif')
+    .text(d => d.cat)
+    .attr('opacity', 0)
+    .transition().duration(400).delay(1000)
+    .attr('opacity', 1);
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// SKILLS — Animated skill bars
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const skills = [
+    { name: 'Python', level: 90, color: '#4B8BBE' },
+    { name: 'D3.js', level: 85, color: '#f9a03c' },
+    { name: 'R', level: 65, color: '#276DC3' },
+    { name: 'Flourish', level: 80, color: '#e06c75' },
+    { name: 'Datawrapper', level: 75, color: '#84ADDC' },
+    { name: 'QGIS', level: 60, color: '#93b023' },
+    { name: 'SQL', level: 70, color: '#FFD682' },
+    { name: 'Scraping', level: 80, color: '#56b6c2' },
+    { name: 'HTML/CSS', level: 85, color: '#e06c75' },
+    { name: 'Git / GitHub', level: 75, color: '#6dd47e' },
+  ];
+
+  const grid = document.querySelector('#skills-grid');
+  skills.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'skill-card';
+    card.innerHTML = `
+      <div class="skill-name">${s.name}</div>
+      <div class="skill-bar-bg">
+        <div class="skill-bar-fill" data-level="${s.level}" style="background:${s.color};"></div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Animate on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        spawnLoop();
+        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.level + '%';
+        });
         observer.disconnect();
       }
     });
-  }, { threshold: 0.2 });
-  observer.observe(document.querySelector('#particle-flow'));
+  }, { threshold: 0.3 });
+  observer.observe(grid);
 })();
 </script>
 </body>

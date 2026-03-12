@@ -1,0 +1,233 @@
+REPOSITORY ANALYSIS — siratton-site
+====================================
+Generated: 2026-03-12
+Purpose: Full technical analysis so future sessions do not need to re-explore.
+
+1. PROJECT OVERVIEW
+-------------------
+Owner:       Côme Nottaris (data-journalist, photographer, journalist)
+Domain:      www.siratton.site
+Hosting:     GitHub Pages (CNAME file at repo root)
+Type:        Pure static portfolio website — no frameworks, no build tools, no npm
+Languages:   HTML5, CSS3, Vanilla JavaScript (ES6+)
+Fonts:       Google Fonts — Inter (400, 600), Playfair Display (400, 700, 900)
+Libraries:   D3.js v7 (CDN) on datavisualisation page only
+             Playfair Display (Google Fonts) on jsl page
+             No other external JS libraries
+
+2. FILE STRUCTURE (2 levels deep)
+---------------------------------
+siratton-site/
+├── index.html                     → Home page (FR), nav bar, no ACCUEIL button
+├── README.md                      → Documentation
+├── CNAME                          → GitHub Pages custom domain (www.siratton.site)
+├── context.txt                    → Design/architecture notes
+├── repo-analysis.txt              → This file — full technical analysis
+├── .gitignore
+│
+├── css/
+│   ├── reset.min.css              → Yahoo CSS Reset 2.8.1 (minified)
+│   ├── main.css                   → Basic font/link resets (inherited from HotGlue)
+│   └── site.css                   → Main stylesheet (~460 lines), CSS variables
+│
+├── img/
+│   └── favicon.ico
+│
+├── journalisme/
+│   └── index.html                 → Journalism hub: flat card grid
+│
+├── jsl/                           → Le Journal de Saône-et-Loire project
+│   ├── index.html                 → Newspaper-style page flipper (8 articles)
+│   └── pdf/                       → 8 article PDFs (~14 MB total)
+│       ├── SNCF.pdf
+│       ├── croix-rouge.pdf
+│       ├── brasseries-artisanales.pdf
+│       ├── soldes.pdf
+│       ├── restaurant-saint-loup.pdf
+│       ├── illuminations-noel.pdf
+│       ├── demolition.pdf
+│       └── boutique-photo.pdf
+│
+├── rsf/
+│   └── index.html                 → RSF project: 6 Flourish dataviz bubbles + PDF
+│
+├── datavisualisation/
+│   └── index.html                 → D3.js interactive constellation graph
+│
+├── photos/
+│   └── index.html                 → Photography links (Flickr, Instagram, Cieza)
+│
+├── contact/
+│   └── index.html                 → Contact: email + social links
+│
+├── autres/
+│   └── index.html                 → Other projects (Automédiathèque, FEA)
+│
+├── automediatheque/
+│   └── index.html                 → Automédiathèque project
+│
+├── fea/
+│   └── index.html                 → Fait Entrer l'Accusé (Notion embed)
+│
+├── cieza/
+│   └── index.html                 → Cieza photo series
+│
+└── tools/
+    ├── scrape_hotglue.py          → Legacy migration script (Python)
+    └── requirements.txt           → Python deps for scraper
+
+3. ROUTING
+----------
+Static directory-based routing (no framework):
+  /                  → index.html
+  /journalisme/      → journalisme/index.html
+  /jsl/              → jsl/index.html
+  /rsf/              → rsf/index.html
+  /datavisualisation/→ datavisualisation/index.html
+  /photos/           → photos/index.html
+  /contact/          → contact/index.html
+  /autres/           → autres/index.html
+  /automediatheque/  → automediatheque/index.html
+  /fea/              → fea/index.html
+  /cieza/            → cieza/index.html
+
+4. CSS ARCHITECTURE
+-------------------
+File: css/site.css (~460 lines)
+
+CSS Variables:
+  --color-bg:        #000     (black background)
+  --color-text:      #fff     (white text)
+  --color-accent:    #EB2828  (red — photography)
+  --color-accent2:   #84ADDC  (blue — links/home)
+  --color-banner:    #FFD682  (yellow — welcome banner, headings)
+  --color-nav-jour:  #fff     (white background — journalism nav)
+  --color-nav-other: #D3D3D3  (gray background — other/contact nav)
+
+Design language:
+  - Dark theme (#000 background, #fff text)
+  - Home page: nav bar at top, NO "Accueil" button
+  - Other pages: small fixed ACCUEIL button (top-left)
+  - Nav items: a.nav-* selectors override link color reset
+  - Responsive breakpoints: 768px, 560px, 380px
+
+Files:
+  css/reset.min.css  → Yahoo CSS Reset (browser normalization)
+  css/main.css       → font: inherit + a:link { color: inherit }
+  css/site.css       → All custom styles
+
+5. PAGE-BY-PAGE DETAILS
+------------------------
+
+HOME (index.html):
+  - Nav bar with links to all sections
+  - Welcome banner with yellow (#FFD682) heading
+  - No ACCUEIL button (already on home)
+
+JOURNALISME (journalisme/index.html):
+  - Flat card grid linking to: Basta, Stup, RSF, JSL, Dataviz, Mediapart, Zahra Joya
+  - Cards are simple divs with hover effects
+
+JSL (jsl/index.html):
+  - CURRENT: Newspaper-style interactive page flipper
+  - PREVIOUS: Was D3.js force-directed bubble chart (replaced March 2026)
+  - Cover page: "Sommaire" table of contents listing all 8 articles
+  - Article pages: embedded PDF with info bar (title, category badge, date, external link)
+  - Navigation: prev/next buttons, page dots, keyboard arrows (←/→), touch swipe
+  - CSS 3D flip animation on page transitions
+  - Font: Playfair Display (Google Fonts) for newspaper masthead/headings
+  - No external JS dependencies — pure vanilla JS
+  - 8 articles stored as PDFs in jsl/pdf/
+  - Article categories: Transport (#E07C24), Société (#EB2828),
+    Économie (#84ADDC), Culture & Loisirs (#A67FD0)
+
+RSF (rsf/index.html):
+  - 6 Flourish dataviz "bubbles" (circles) displayed in a grid
+  - Click opens a Flourish embed in an overlay modal
+  - Also includes a PDF download link
+
+DATAVISUALISATION (datavisualisation/index.html):
+  - D3.js v7 force-directed constellation graph
+  - Nodes = projects + skills
+  - Flourish skill node links to profile
+  - CDN: https://d3js.org/d3.v7.min.js
+
+PHOTOS (photos/index.html):
+  - Simple list of links (Flickr, Instagram, Cieza kdrive)
+
+CONTACT (contact/index.html):
+  - Email + social links (Instagram, Facebook, Bluesky, Mastodon, GitHub)
+
+AUTRES (autres/index.html):
+  - Links to Automédiathèque and FEA
+
+AUTOMÉDIATHÈQUE (automediatheque/index.html):
+  - Links to automediatheque.org
+
+FEA (fea/index.html):
+  - Fait Entrer l'Accusé: Notion embed + questionnaire link
+
+CIEZA (cieza/index.html):
+  - Cieza photo series page
+
+6. JSL ARTICLES DATA
+---------------------
+8 articles, each with: title, pdf, url, category, date, color
+
+  1. "Travaux sur la ligne SNCF : entraide et bouche-à-oreille vont bon train"
+     PDF: pdf/SNCF.pdf | Category: Transport | Date: 2023-12-11 | Color: #E07C24
+
+  2. "Les maraudes de la Croix-Rouge, de la chaleur au cœur de la nuit"
+     PDF: pdf/croix-rouge.pdf | Category: Société | Date: 2023-12-16 | Color: #EB2828
+
+  3. "Brasseries artisanales : comment sortir de la crise"
+     PDF: pdf/brasseries-artisanales.pdf | Category: Économie | Date: 2024-01-11 | Color: #84ADDC
+
+  4. "Après les ventes privées, place aux soldes jusqu'au 6 février"
+     PDF: pdf/soldes.pdf | Category: Économie | Date: 2024-01-10 | Color: #84ADDC
+
+  5. "Restauration : le Saint-Loup repart de plus belle"
+     PDF: pdf/restaurant-saint-loup.pdf | Category: Économie | Date: 2023-12-19 | Color: #84ADDC
+
+  6. "Des illuminations en famille pour partager la magie de Noël"
+     PDF: pdf/illuminations-noel.pdf | Category: Culture & Loisirs | Date: 2023-12-23 | Color: #A67FD0
+
+  7. "Propriété de la commune, une grange du XVIIe siècle en cours de démolition"
+     PDF: pdf/demolition.pdf | Category: Culture & Loisirs | Date: 2023-12-28 | Color: #A67FD0
+
+  8. "Après 35 ans de service, clap de fin pour la boutique La Boîte à Photo"
+     PDF: pdf/boutique-photo.pdf | Category: Économie | Date: 2024-01-03 | Color: #84ADDC
+
+7. EXTERNAL LINKS
+------------------
+  - Flickr:       https://www.flickr.com/photos/197713351@N07/
+  - Instagram:    https://instagram.com/comenottaris
+  - Bluesky:      https://bsky.app/profile/siratton.bsky.social
+  - Mastodon:     https://piaille.fr/@siratton
+  - GitHub:       https://github.com/comenottaris
+  - Mediapart:    https://blogs.mediapart.fr/siratton/blog/
+  - Automédia:    https://automediatheque.org
+  - Flourish:     https://app.flourish.studio/@Siratton
+
+8. BUILD & DEPLOYMENT
+----------------------
+  - No build process (no npm, no bundler, no transpiler)
+  - No package.json
+  - No test infrastructure
+  - Deploy: push to main → GitHub Pages auto-deploys
+  - Custom domain via CNAME file
+
+9. KNOWN ISSUES & HISTORY
+--------------------------
+  - English pages (home-en/, photos-en/, journalisme-en/) were deleted (out of sync)
+  - datavisualisation/index.html had encoding corruption (null bytes) from HotGlue
+    migration — fixed previously
+  - JS syntax error (missing closing quote on line 264) in dataviz — fixed previously
+  - Flickr API key is empty — albums grid was removed from photos page
+  - JSL page was originally a D3.js force-directed bubble chart, replaced with
+    newspaper-style page flipper in March 2026
+
+10. TOOLS & LEGACY
+-------------------
+  - tools/scrape_hotglue.py — Python scraper for migrating from HotGlue (legacy)
+  - tools/requirements.txt — Python deps for scraper (beautifulsoup4, requests)

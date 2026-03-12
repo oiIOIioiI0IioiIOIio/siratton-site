@@ -15,10 +15,12 @@ automediatheque/index.html → Automédiathèque project (links to automediatheq
 fea/index.html          → Fait Entrer l'Accusé (Notion embed + questionnaire link).
 rsf/index.html          → RSF project: 6 Flourish dataviz bubbles (embed on click) + PDF.
 cieza/index.html        → Cieza photo series page (still exists, linked from photos via kdrive).
-jsl/index.html          → JSL project page: D3.js force-directed dataviz with 8 articles.
-                           Each article node shows title; click opens tooltip with two options:
-                           "Lire ici (PDF)" loads the local PDF, "Lire sur le site" opens the
-                           article on c.lejsl.com. PDFs stored in jsl/pdf/.
+jsl/index.html          → JSL project page: newspaper-style page flipper with 8 articles.
+                           Opens as a newspaper with a cover "Sommaire" listing all articles.
+                           Each page embeds the article PDF. Navigation via prev/next buttons,
+                           page dots, keyboard arrows, touch swipe, or clicking TOC items.
+                           Each article page shows title, category, date, and a link to the
+                           original article on c.lejsl.com. PDFs stored in jsl/pdf/.
 
 ENGLISH PAGES
 -------------
@@ -51,9 +53,12 @@ DESIGN DECISIONS
   by the `a:link { color: inherit }` rule in main.css.
 - Journalisme page: single flat card-grid, no section headings.
 - RSF page: dataviz bubbles open Flourish embeds in an overlay on click.
-- JSL page: D3.js force-directed bubble chart. 8 article nodes colored by category
-  (Transport, Société, Économie, Culture & Loisirs). Click shows tooltip with
-  "Lire ici (PDF)" and "Lire sur le site" buttons.
+- JSL page: newspaper-style interactive page flipper. Cover page shows a "Sommaire"
+  (table of contents) listing all 8 articles. Each article page embeds the PDF directly
+  with an info bar showing title, category badge, date, and external link. Navigation via
+  prev/next buttons, clickable page dots, keyboard arrows (←/→), and touch swipe.
+  CSS 3D flip animation plays when turning pages. Uses Playfair Display serif font for
+  newspaper masthead. No external JS libraries — pure vanilla JS.
 - Datavisualisation: D3.js force-directed graph. Flourish skill node links to profile.
 - Photography: simple list of links (Flickr, Instagram, Cieza kdrive).
 - Contact: email + social links (Instagram, Facebook, Bluesky, Mastodon, GitHub).

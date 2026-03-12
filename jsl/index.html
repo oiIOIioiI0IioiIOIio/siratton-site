@@ -8,97 +8,383 @@
   <link rel="stylesheet" href="../css/reset.min.css">
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/site.css">
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    #jsl-chart {
-      width: 100%;
-      max-width: 900px;
-      margin: 2rem auto;
+    /* ── Newspaper wrapper ────────────────────────────── */
+    .newspaper-outer {
+      max-width: 940px;
+      margin: 60px auto 40px;
+      padding: 0 16px;
     }
-    #jsl-chart svg {
-      width: 100%;
-      height: auto;
+
+    .newspaper {
+      background: #f5f0e1;
+      border-radius: 4px;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.15),
+        0 8px 24px rgba(0,0,0,0.35),
+        0 16px 48px rgba(0,0,0,0.25);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Masthead ─────────────────────────────────────── */
+    .masthead {
+      text-align: center;
+      padding: 22px 20px 14px;
+      border-bottom: 3px double #222;
+      background: linear-gradient(180deg, #f8f4e8 0%, #f5f0e1 100%);
+    }
+
+    .masthead-name {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-weight: 900;
+      font-size: 2.4rem;
+      color: #1a1a1a;
+      letter-spacing: 1.5px;
+      line-height: 1.15;
+    }
+
+    .masthead-sub {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.85rem;
+      color: #777;
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .masthead-rule {
+      height: 1px;
+      background: #bbb;
+      margin: 12px 40px 0;
+    }
+
+    /* ── Article info bar (shown on article pages) ───── */
+    .article-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #d5d0c0;
+      background: #ede8d8;
+      min-height: 44px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .article-bar-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .article-bar-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .article-bar-cat {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 3px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .article-bar-date {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    .article-bar-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      color: #555;
+      text-decoration: underline;
+      margin-left: 6px;
+    }
+
+    .article-bar-link:hover { color: #222; }
+
+    /* ── Page content area ────────────────────────────── */
+    .page-viewport {
+      position: relative;
+      overflow: hidden;
+      perspective: 1800px;
+    }
+
+    .page-inner {
+      transition: opacity 0.12s ease;
+    }
+
+    .page-inner.flipping { opacity: 0; }
+
+    /* Flip overlay — decorative page-turn sheet */
+    .flip-sheet {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, #ece7d5 0%, #f5f0e1 40%, #e8e3d1 100%);
+      z-index: 20;
+      pointer-events: none;
+      display: none;
+      backface-visibility: hidden;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.12);
+    }
+
+    .flip-sheet.forward {
+      right: 0;
+      transform-origin: left center;
       display: block;
+      animation: flipFwd 0.55s ease-in-out forwards;
     }
-    .node-group { cursor: pointer; }
-    .node-circle {
-      stroke: #333;
-      stroke-width: 1.5;
-      transition: filter 0.2s;
+
+    .flip-sheet.backward {
+      left: 0;
+      transform-origin: right center;
+      display: block;
+      animation: flipBwd 0.55s ease-in-out forwards;
     }
-    .node-group:hover .node-circle {
-      filter: brightness(1.3);
+
+    @keyframes flipFwd {
+      0%   { transform: rotateY(0deg); }
+      100% { transform: rotateY(-180deg); }
     }
-    .node-label {
-      fill: #fff;
+
+    @keyframes flipBwd {
+      0%   { transform: rotateY(0deg); }
+      100% { transform: rotateY(180deg); }
+    }
+
+    /* ── Cover page ───────────────────────────────────── */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      min-height: 420px;
+      text-align: center;
+    }
+
+    .cover-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 900;
+      font-size: 2rem;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .cover-edition {
       font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      text-anchor: middle;
-      pointer-events: none;
+      font-size: 0.82rem;
+      color: #999;
+      margin-bottom: 24px;
     }
-    .tooltip-box {
-      pointer-events: all;
+
+    .cover-toc {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      max-width: 520px;
     }
-    .tooltip-box rect {
-      rx: 8;
-      ry: 8;
-    }
-    .tooltip-btn {
+
+    .cover-toc li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 9px 4px;
+      border-bottom: 1px solid #d5d0c0;
       cursor: pointer;
+      transition: background 0.15s;
     }
-    .tooltip-btn rect {
-      rx: 5;
-      ry: 5;
-      transition: fill 0.15s;
+
+    .cover-toc li:hover { background: #ede8d8; }
+    .cover-toc li:first-child { border-top: 1px solid #d5d0c0; }
+
+    .toc-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.95rem;
+      color: #1a1a1a;
+      text-align: left;
+      flex: 1;
     }
-    .tooltip-btn:hover rect {
-      fill: #555 !important;
-    }
-    .tooltip-btn text {
-      fill: #fff;
+
+    .toc-cat {
       font-family: 'Inter', sans-serif;
-      font-size: 12px;
+      font-size: 0.7rem;
       font-weight: 600;
-      text-anchor: middle;
-      pointer-events: none;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 12px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
-    .tooltip-title {
-      fill: #fff;
+
+    .cover-hint {
       font-family: 'Inter', sans-serif;
-      font-size: 13px;
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-top: 28px;
+    }
+
+    .cover-hint kbd {
+      display: inline-block;
+      background: #ddd;
+      color: #444;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      border: 1px solid #bbb;
+    }
+
+    /* ── Embedded PDF ─────────────────────────────────── */
+    .pdf-frame {
+      width: 100%;
+      height: 68vh;
+      min-height: 400px;
+      border: none;
+      display: block;
+      background: #e8e3d3;
+    }
+
+    /* ── Navigation controls ──────────────────────────── */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #ede8d8;
+      border-top: 2px solid #333;
+      user-select: none;
+    }
+
+    .nav-btn {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 9px 22px;
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
       font-weight: 600;
-      text-anchor: middle;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .category-label {
-      fill: #666;
+
+    .nav-btn:hover:not(:disabled) { background: #555; }
+    .nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+    .nav-center {
+      text-align: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .nav-indicator {
       font-family: 'Inter', sans-serif;
-      font-size: 10px;
-      text-anchor: middle;
-      pointer-events: none;
+      font-size: 0.82rem;
+      color: #555;
+      font-weight: 600;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 7px;
+      justify-content: center;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #ccc;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .nav-dot:hover { background: #999; }
+    .nav-dot.active { background: #333; transform: scale(1.35); }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 768px) {
+      .newspaper-outer { margin-top: 50px; padding: 0 8px; }
+      .masthead-name   { font-size: 1.5rem; }
+      .cover-heading   { font-size: 1.5rem; }
+      .cover           { padding: 28px 16px; min-height: 340px; }
+      .pdf-frame       { height: 55vh; min-height: 300px; }
+      .article-bar     { flex-direction: column; text-align: center; }
+      .article-bar-title { text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .masthead-name { font-size: 1.15rem; }
+      .nav-btn       { padding: 8px 14px; font-size: 0.78rem; }
+      .pdf-frame     { height: 50vh; min-height: 260px; }
     }
   </style>
 </head>
 <body class="page" id="jsl.head" style="background-color: #000000;">
   <a href="../index.html" class="btn-accueil">ACCUEIL</a>
 
-  <div class="page-wrapper">
-  <div class="page-content">
-    <div style="height:50px;"></div>
-    <h1 style="color:#FFD682; text-align:center;">Le Journal de Saône-et-Loire</h1>
-    <p style="text-align:center;">Articles publiés au JSL — cliquez sur un article pour le lire.</p>
+  <div class="newspaper-outer">
+    <div class="newspaper">
 
-    <div id="jsl-chart"></div>
+      <!-- Masthead -->
+      <div class="masthead">
+        <div class="masthead-name">Le Journal de Saône-et-Loire</div>
+        <div class="masthead-sub">Articles publiés par Côme Nottaris</div>
+        <div class="masthead-rule"></div>
+      </div>
 
-  </div>
+      <!-- Page viewport (cover / articles shown here) -->
+      <div class="page-viewport">
+        <div class="flip-sheet" id="flip-sheet"></div>
+        <div class="page-inner" id="page-inner">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Navigation bar -->
+      <div class="nav-bar">
+        <button class="nav-btn" id="btn-prev" disabled>◄ Précédent</button>
+        <div class="nav-center">
+          <div class="nav-indicator" id="nav-indicator">Couverture</div>
+          <div class="nav-dots" id="nav-dots"></div>
+        </div>
+        <button class="nav-btn" id="btn-next">Suivant ►</button>
+      </div>
+
+    </div>
   </div>
 
   <script>
-  (function() {
+  (function () {
+    /* ── Article data ──────────────────────────────── */
     var articles = [
       {
         title: "Travaux sur la ligne SNCF : entraide et bouche-à-oreille vont bon train",
-        short: "Travaux SNCF",
         pdf: "pdf/SNCF.pdf",
         url: "https://c.lejsl.com/transport/2023/12/11/travaux-sur-la-ligne-sncf-entraide-et-bouche-a-oreille-vont-bon-train",
         category: "Transport",
@@ -107,7 +393,6 @@
       },
       {
         title: "Les maraudes de la Croix-Rouge, de la chaleur au cœur de la nuit",
-        short: "Maraudes Croix-Rouge",
         pdf: "pdf/croix-rouge.pdf",
         url: "https://c.lejsl.com/societe/2023/12/16/les-maraudes-de-la-croix-rouge-de-la-chaleur-au-coeur-de-la-nuit",
         category: "Société",
@@ -116,7 +401,6 @@
       },
       {
         title: "Brasseries artisanales : comment sortir de la crise",
-        short: "Brasseries artisanales",
         pdf: "pdf/brasseries-artisanales.pdf",
         url: "https://c.lejsl.com/economie/2024/01/11/brasseries-artisanales-comment-sortir-de-la-crise",
         category: "Économie",
@@ -125,7 +409,6 @@
       },
       {
         title: "Après les ventes privées, place aux soldes jusqu'au 6 février",
-        short: "Soldes",
         pdf: "pdf/soldes.pdf",
         url: "https://c.lejsl.com/economie/2024/01/10/apres-les-ventes-privees-place-aux-soldes-jusqu-au-6-fevrier",
         category: "Économie",
@@ -134,7 +417,6 @@
       },
       {
         title: "Restauration : le Saint-Loup repart de plus belle",
-        short: "Restaurant Saint-Loup",
         pdf: "pdf/restaurant-saint-loup.pdf",
         url: "https://c.lejsl.com/economie/2023/12/19/restauration-le-saint-loup-repart-de-plus-belle",
         category: "Économie",
@@ -143,7 +425,6 @@
       },
       {
         title: "Des illuminations en famille pour partager la magie de Noël",
-        short: "Illuminations de Noël",
         pdf: "pdf/illuminations-noel.pdf",
         url: "https://c.lejsl.com/culture-loisirs/2023/12/23/des-illuminations-en-famille-pour-partager-la-magie-de-noel",
         category: "Culture & Loisirs",
@@ -152,7 +433,6 @@
       },
       {
         title: "Propriété de la commune, une grange du XVIIe siècle en cours de démolition",
-        short: "Grange XVIIe siècle",
         pdf: "pdf/demolition.pdf",
         url: "https://c.lejsl.com/culture-loisirs/2023/12/28/propriete-de-la-commune-une-grange-du-xviie-siecle-en-cours-de-demolition",
         category: "Culture & Loisirs",
@@ -161,7 +441,6 @@
       },
       {
         title: "Après 35 ans de service, clap de fin pour la boutique La Boîte à Photo",
-        short: "La Boîte à Photo",
         pdf: "pdf/boutique-photo.pdf",
         url: "https://c.lejsl.com/economie/2024/01/03/apres-35-ans-de-service-clap-de-fin-pour-la-boutique-la-boite-a-photo",
         category: "Économie",
@@ -170,197 +449,175 @@
       }
     ];
 
-    var container = document.getElementById("jsl-chart");
-    var width = 900;
-    var height = 600;
-    var nodeRadius = 60;
+    var totalPages  = articles.length + 1;   // cover + 8 articles
+    var currentPage = 0;                      // 0 = cover
+    var flipping    = false;
 
-    var svg = d3.select("#jsl-chart")
-      .append("svg")
-      .attr("viewBox", "0 0 " + width + " " + height)
-      .attr("preserveAspectRatio", "xMidYMid meet");
+    var pageInner   = document.getElementById("page-inner");
+    var flipSheet   = document.getElementById("flip-sheet");
+    var btnPrev     = document.getElementById("btn-prev");
+    var btnNext     = document.getElementById("btn-next");
+    var indicator   = document.getElementById("nav-indicator");
+    var dotsWrap    = document.getElementById("nav-dots");
 
-    svg.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("fill", "#000")
-      .attr("rx", 12);
+    /* ── Format date to French locale ──────────────── */
+    function fmtDate(iso) {
+      var d = new Date(iso + "T00:00:00");
+      return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+    }
 
-    var tooltip = svg.append("g")
-      .attr("class", "tooltip-box")
-      .style("display", "none");
-
-    var simulation = d3.forceSimulation(articles)
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("collision", d3.forceCollide().radius(nodeRadius + 10))
-      .force("x", d3.forceX(width / 2).strength(0.05))
-      .force("y", d3.forceY(height / 2).strength(0.05));
-
-    var nodeGroups = svg.selectAll(".node-group")
-      .data(articles)
-      .enter()
-      .append("g")
-      .attr("class", "node-group")
-      .call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
-
-    nodeGroups.append("circle")
-      .attr("class", "node-circle")
-      .attr("r", nodeRadius)
-      .attr("fill", function(d) { return d.color; })
-      .attr("fill-opacity", 0.85);
-
-    nodeGroups.each(function(d) {
-      var g = d3.select(this);
-      var words = d.short.split(/\s+/);
-      var lines = [];
-      var current = "";
-      words.forEach(function(w) {
-        if ((current + " " + w).trim().length > 12 && current.length > 0) {
-          lines.push(current);
-          current = w;
-        } else {
-          current = current ? current + " " + w : w;
-        }
+    /* ── Render cover page ─────────────────────────── */
+    function renderCover() {
+      var h = '<div class="cover">';
+      h += '<div class="cover-heading">Sommaire</div>';
+      h += '<div class="cover-edition">8 articles · décembre 2023 — janvier 2024</div>';
+      h += '<ul class="cover-toc">';
+      articles.forEach(function (a, i) {
+        h += '<li data-goto="' + (i + 1) + '">';
+        h += '<span class="toc-title">' + a.title + '</span>';
+        h += '<span class="toc-cat" style="background:' + a.color + '">' + a.category + '</span>';
+        h += '</li>';
       });
-      if (current) lines.push(current);
+      h += '</ul>';
+      h += '<div class="cover-hint">Cliquez sur un titre ou utilisez les flèches <kbd>←</kbd> <kbd>→</kbd> pour tourner les pages</div>';
+      h += '</div>';
+      return h;
+    }
 
-      lines.forEach(function(line, i) {
-        g.append("text")
-          .attr("class", "node-label")
-          .attr("dy", (i - (lines.length - 1) / 2) * 14)
-          .text(line);
-      });
+    /* ── Render article page ───────────────────────── */
+    function renderArticle(idx) {
+      var a = articles[idx];
+      var h = '';
+      h += '<div class="article-bar">';
+      h += '<div class="article-bar-title">' + a.title + '</div>';
+      h += '<div class="article-bar-meta">';
+      h += '<span class="article-bar-cat" style="background:' + a.color + '">' + a.category + '</span>';
+      h += '<span class="article-bar-date">' + fmtDate(a.date) + '</span>';
+      h += '<a class="article-bar-link" href="' + a.url + '" target="_blank" rel="noopener">Lire sur le site ↗</a>';
+      h += '</div>';
+      h += '</div>';
+      h += '<embed class="pdf-frame" src="' + a.pdf + '" type="application/pdf">';
+      return h;
+    }
 
-      g.append("text")
-        .attr("class", "category-label")
-        .attr("dy", nodeRadius - 12)
-        .text(d.category);
-    });
-
-    nodeGroups.on("click", function(event, d) {
-      event.stopPropagation();
-      showTooltip(d);
-    });
-
-    svg.on("click", function() {
-      tooltip.style("display", "none");
-    });
-
-    function showTooltip(d) {
-      tooltip.selectAll("*").remove();
-      tooltip.style("display", null);
-
-      var tx = Math.min(Math.max(d.x, 170), width - 170);
-      var ty = Math.min(Math.max(d.y - nodeRadius - 90, 10), height - 110);
-      tooltip.attr("transform", "translate(" + tx + "," + ty + ")");
-
-      tooltip.append("rect")
-        .attr("x", -160)
-        .attr("y", -10)
-        .attr("width", 320)
-        .attr("height", 100)
-        .attr("fill", "#1a1a1a")
-        .attr("stroke", "#444")
-        .attr("stroke-width", 1);
-
-      var titleLines = wrapText(d.title, 40);
-      titleLines.forEach(function(line, i) {
-        tooltip.append("text")
-          .attr("class", "tooltip-title")
-          .attr("y", 8 + i * 16)
-          .text(line);
-      });
-
-      var btnY = 14 + titleLines.length * 16;
-
-      var btnPdf = tooltip.append("g")
-        .attr("class", "tooltip-btn")
-        .attr("transform", "translate(-75," + btnY + ")")
-        .style("cursor", "pointer")
-        .on("click", function(event) {
-          event.stopPropagation();
-          window.open(d.pdf, "_blank");
+    /* ── Render current page ───────────────────────── */
+    function renderPage() {
+      if (currentPage === 0) {
+        pageInner.innerHTML = renderCover();
+        /* Attach click handlers to TOC items */
+        var items = pageInner.querySelectorAll("[data-goto]");
+        items.forEach(function (el) {
+          el.addEventListener("click", function () {
+            goToPage(parseInt(this.getAttribute("data-goto"), 10), "forward");
+          });
         });
+      } else {
+        pageInner.innerHTML = renderArticle(currentPage - 1);
+      }
+      updateNav();
+    }
 
-      btnPdf.append("rect")
-        .attr("x", -65)
-        .attr("y", -2)
-        .attr("width", 130)
-        .attr("height", 28)
-        .attr("fill", "#333");
+    /* ── Navigation helpers ────────────────────────── */
+    function updateNav() {
+      btnPrev.disabled = currentPage === 0;
+      btnNext.disabled = currentPage === totalPages - 1;
 
-      btnPdf.append("text")
-        .attr("y", 17)
-        .text("📄 Lire ici (PDF)");
+      if (currentPage === 0) {
+        indicator.textContent = "Couverture";
+      } else {
+        indicator.textContent = "Article " + currentPage + " / " + articles.length;
+      }
 
-      var btnSite = tooltip.append("g")
-        .attr("class", "tooltip-btn")
-        .attr("transform", "translate(75," + btnY + ")")
-        .style("cursor", "pointer")
-        .on("click", function(event) {
-          event.stopPropagation();
-          window.open(d.url, "_blank");
+      var dots = dotsWrap.querySelectorAll(".nav-dot");
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle("active", i === currentPage);
+      });
+    }
+
+    function buildDots() {
+      dotsWrap.innerHTML = "";
+      for (var i = 0; i < totalPages; i++) {
+        var btn = document.createElement("button");
+        btn.className = "nav-dot" + (i === 0 ? " active" : "");
+        btn.setAttribute("aria-label", i === 0 ? "Couverture" : "Article " + i);
+        btn.setAttribute("data-page", i);
+        btn.addEventListener("click", function () {
+          var target = parseInt(this.getAttribute("data-page"), 10);
+          if (target !== currentPage) {
+            goToPage(target, target > currentPage ? "forward" : "backward");
+          }
         });
-
-      btnSite.append("rect")
-        .attr("x", -65)
-        .attr("y", -2)
-        .attr("width", 130)
-        .attr("height", 28)
-        .attr("fill", "#333");
-
-      btnSite.append("text")
-        .attr("y", 17)
-        .text("🔗 Lire sur le site");
-
-      var totalH = btnY + 36;
-      tooltip.select("rect").attr("height", totalH);
+        dotsWrap.appendChild(btn);
+      }
     }
 
-    function wrapText(text, maxLen) {
-      var words = text.split(/\s+/);
-      var lines = [];
-      var current = "";
-      words.forEach(function(w) {
-        if ((current + " " + w).trim().length > maxLen && current.length > 0) {
-          lines.push(current);
-          current = w;
-        } else {
-          current = current ? current + " " + w : w;
-        }
-      });
-      if (current) lines.push(current);
-      return lines;
+    /* ── Page flip animation ───────────────────────── */
+    function goToPage(target, direction) {
+      if (flipping || target === currentPage || target < 0 || target >= totalPages) return;
+      flipping = true;
+
+      /* Start flip animation */
+      flipSheet.className = "flip-sheet " + (direction === "forward" ? "forward" : "backward");
+
+      /* Fade out current content slightly into the animation */
+      setTimeout(function () {
+        pageInner.classList.add("flipping");
+      }, 150);
+
+      /* Swap content at midpoint */
+      setTimeout(function () {
+        currentPage = target;
+        renderPage();
+        pageInner.classList.remove("flipping");
+      }, 300);
+
+      /* Clean up flip sheet after animation ends */
+      setTimeout(function () {
+        flipSheet.className = "flip-sheet";
+        flipping = false;
+      }, 580);
     }
 
-    simulation.on("tick", function() {
-      nodeGroups.attr("transform", function(d) {
-        d.x = Math.max(nodeRadius, Math.min(width - nodeRadius, d.x));
-        d.y = Math.max(nodeRadius, Math.min(height - nodeRadius, d.y));
-        return "translate(" + d.x + "," + d.y + ")";
-      });
+    /* ── Button handlers ───────────────────────────── */
+    btnPrev.addEventListener("click", function () {
+      goToPage(currentPage - 1, "backward");
     });
 
-    function dragstarted(event, d) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
+    btnNext.addEventListener("click", function () {
+      goToPage(currentPage + 1, "forward");
+    });
 
-    function dragged(event, d) {
-      d.fx = event.x;
-      d.fy = event.y;
-    }
+    /* ── Keyboard navigation ───────────────────────── */
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        goToPage(currentPage + 1, "forward");
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        goToPage(currentPage - 1, "backward");
+      }
+    });
 
-    function dragended(event, d) {
-      if (!event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
+    /* ── Touch / swipe support ─────────────────────── */
+    var touchStartX = 0;
+    var touchStartY = 0;
+    document.addEventListener("touchstart", function (e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", function (e) {
+      var dx = e.changedTouches[0].screenX - touchStartX;
+      var dy = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) goToPage(currentPage + 1, "forward");
+        else        goToPage(currentPage - 1, "backward");
+      }
+    }, { passive: true });
+
+    /* ── Initialise ────────────────────────────────── */
+    buildDots();
+    renderPage();
   })();
   </script>
 </body>

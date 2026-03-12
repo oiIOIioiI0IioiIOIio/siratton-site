@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>Data-visualisation — Côme Nottaris</title>
   <link rel="shortcut icon" href="../img/favicon.ico">
   <link rel="stylesheet" href="../css/reset.min.css">
@@ -130,6 +133,7 @@
 </head>
 <body class="page" id="datavisualisation.head" style="background-color: #000000;">
   <a href="../index.html" class="btn-accueil">ACCUEIL</a>
+  <a href="#" class="btn-english" aria-label="English version">EN</a>
 
   <div class="page-wrapper">
   <div class="page-content">
@@ -261,7 +265,7 @@ function openProject(proj) {
 
   var linksHTML = proj.links.map(function(l) {
     return '<a class="panel-link" href="' + l.href + '"' +
-      (l.ext ? ' target="_blank"' : '') + '>' + l.text + '</a>';
+      (l.ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + l.text + '</a>';
   }).join('');
 
   var tagsHTML = proj.tags.map(function(t) {

@@ -132,14 +132,15 @@
   </style>
 </head>
 <body class="page" id="datavisualisation.head" style="background-color: #000000;">
-  <a href="../index.html" class="btn-accueil">ACCUEIL</a>
+  <a href="../index.html" class="btn-accueil" data-fr="ACCUEIL" data-en="HOME">ACCUEIL</a>
   <a href="#" class="btn-english" aria-label="English version">EN</a>
 
   <div class="page-wrapper">
   <div class="page-content">
     <div style="height:50px;"></div>
     <div id="universe"></div>
-    <p class="hint">Survolez les n&#339;uds &middot; Cliquez pour explorer &middot; Glissez pour r&eacute;organiser</p>
+    <p class="hint" data-fr="Survolez les nœuds · Cliquez pour explorer · Glissez pour réorganiser"
+       data-en="Hover over nodes · Click to explore · Drag to rearrange">Survolez les n&#339;uds &middot; Cliquez pour explorer &middot; Glissez pour r&eacute;organiser</p>
   </div>
   </div>
 
@@ -595,5 +596,6 @@ function openProject(proj) {
   twinkle();
 })();
 </script>
+<script src="../js/lang.js"></script>
 </body>
 </html>

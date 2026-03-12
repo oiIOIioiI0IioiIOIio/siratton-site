@@ -111,6 +111,25 @@ body {
   overflow-x: hidden;
 }
 
+/* ── Bouton Portfolio (page d'accueil) ────────────────────────────── */
+.btn-portfolio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  min-height: 28px;
+  padding: 3px 0;
+}
+
 /* ── Bouton Accueil (hérité de HotGlue) ─────────────────────────── */
 .btn-accueil {
   display: inline-flex;
@@ -140,24 +159,29 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #c30000;
+  background-color: transparent;
   color: #fff;
   font-family: var(--font-main);
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 600;
-  padding: 6px 14px;
-  min-height: 44px;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
   text-align: center;
   text-decoration: none;
-  letter-spacing: 0.03em;
-  border-radius: 0.5rem;
+  letter-spacing: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
   position: fixed;
   top: 10px;
   right: 10px;
   z-index: 1000;
   transition: opacity 0.2s, transform 0.2s;
+  overflow: hidden;
+  cursor: pointer;
 }
-.btn-english:hover { opacity: 0.85; transform: scale(1.03); }
+.btn-english:hover { opacity: 0.85; transform: scale(1.08); }
 .btn-english:active { transform: scale(0.97); }
 
 /* ── Titre de page centré ─────────────────────────────────────────── */
@@ -195,15 +219,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.4rem;
+  padding: 0.5rem 0.6rem;
   border-radius: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
   color: inherit;
+  letter-spacing: 0.04em;
 }
 .nav-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
 .nav-item:active { transform: translateY(0); }
@@ -219,11 +244,18 @@ a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px sol
   background: var(--color-banner);
   color: #000;
   border-radius: 0.75rem;
-  padding: 1.2rem 1rem;
+  padding: 1rem 1rem;
   text-align: center;
-  line-height: 1.6;
-  font-size: clamp(1rem, 3.5vw, 1.5rem);
+  line-height: 1.5;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
   margin: 0.2rem;
+}
+.welcome-text {
+  font-weight: 600;
+}
+.welcome-name {
+  font-weight: 400;
+  font-size: 0.9em;
 }
 
 /* ── Image responsive ────────────────────────────────────────────── */
@@ -266,8 +298,7 @@ a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px sol
 }
 .page-content a {
   color: var(--color-accent2);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
   transition: color 0.2s;
 }
 .page-content a:hover {
@@ -296,6 +327,7 @@ a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px sol
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
   border: 1px solid #222;
+  text-decoration: none;
 }
 .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
 .card:active { transform: translateY(-1px); }
@@ -305,16 +337,21 @@ a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px sol
   object-fit: cover;
 }
 .card-body {
-  padding: 1rem;
+  padding: 0.8rem 1rem;
 }
 .card-body h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+  text-decoration: none;
 }
 .card-body p {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: #aaa;
-  line-height: 1.5;
+  line-height: 1.4;
+  text-decoration: none;
 }
 
 /* ── Iframe container ────────────────────────────────────────────── */
@@ -405,6 +442,14 @@ a.nav-contact { background: var(--color-nav-other); color: #000; border: 1px sol
 .contact-info p {
   font-size: 1.1rem;
 }
+.contact-info a {
+  text-decoration: none;
+  color: var(--color-accent2);
+  transition: color 0.2s;
+}
+.contact-info a:hover {
+  color: var(--color-banner);
+}
 
 /* ── Focus visible pour accessibilité ────────────────────────────── */
 a:focus-visible,
@@ -435,6 +480,11 @@ button:focus-visible {
 
 /* ── Responsive — smartphone ─────────────────────────────────────── */
 @media (max-width: 560px) {
+  .btn-portfolio {
+    font-size: 12px;
+    top: 8px;
+    left: 8px;
+  }
   .btn-accueil {
     font-size: 11px;
     padding: 3px 8px;
@@ -444,9 +494,11 @@ button:focus-visible {
   }
   .btn-english {
     position: fixed;
-    font-size: 12px;
-    padding: 5px 10px;
-    min-height: 36px;
+    font-size: 16px;
+    padding: 0;
+    width: 26px;
+    height: 26px;
+    min-height: 26px;
     top: 8px;
     right: 8px;
   }
@@ -513,8 +565,10 @@ button:focus-visible {
     padding: 2px 6px;
   }
   .btn-english {
-    font-size: 11px;
-    padding: 4px 8px;
+    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
   }
   .page-wrapper {
     padding: 0 10px;
@@ -531,6 +585,10 @@ button:focus-visible {
 
 /* ── Safe-area pour téléphones à encoche ──────────────────────────── */
 @supports (padding: env(safe-area-inset-top)) {
+  .btn-portfolio {
+    top: calc(10px + env(safe-area-inset-top));
+    left: calc(10px + env(safe-area-inset-left));
+  }
   .btn-accueil {
     top: calc(10px + env(safe-area-inset-top));
     left: calc(10px + env(safe-area-inset-left));

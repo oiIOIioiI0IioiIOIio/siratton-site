@@ -13,7 +13,7 @@
     document.documentElement.setAttribute('lang', lang);
 
     document.querySelectorAll('.btn-english').forEach(function (btn) {
-      btn.textContent = lang === 'fr' ? 'EN' : 'FR';
+      btn.textContent = lang === 'fr' ? '\u{1F1EC}\u{1F1E7}' : '\u{1F1EB}\u{1F1F7}';
       btn.setAttribute('aria-label',
         lang === 'fr' ? 'English version' : 'Version française');
     });

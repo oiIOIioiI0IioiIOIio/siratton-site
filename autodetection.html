@@ -586,7 +586,7 @@ async function runAgent() {
       const prev=document.createElement('div');prev.className='preview-item';
       prev.innerHTML=`<div class="pi-name">${item.name}</div><div class="pi-meta">${[item.type,item.country,(item.languages||[]).join(', ')].filter(Boolean).join(' · ')}</div>`;
       document.getElementById('agentLog').appendChild(prev);
-      document.getElementById('agentLog').scrollTop=9999;
+      document.getElementById('agentLog').scrollTop=document.getElementById('agentLog').scrollHeight;
       try {
         await sbInsert({name:item.name,url:item.url,type:item.type,country:item.country,languages:item.languages,status:item.status||'online',description:item.description,theme:item.theme||inp,notes:item.notes||null,orientation:null});
         prev.innerHTML+=`<div class="pi-ok">✓ Ajouté</div>`;ok++;

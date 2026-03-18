@@ -18,7 +18,7 @@
   body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
   /* AUTH SCREEN */
-  #auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+  #auth-screen{position:fixed;top:0;right:0;bottom:0;left:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
   .auth-box{text-align:center;max-width:340px;width:90%;}
   .auth-box h1{font-size:1.3rem;margin-bottom:.4rem;color:var(--text);}
   .auth-box p{font-size:.82rem;color:var(--text2);margin-bottom:1.4rem;}
@@ -29,7 +29,7 @@
   .auth-error{color:var(--red);font-size:.82rem;margin-top:6px;display:none;}
 
   /* API KEY OVERLAY */
-  #api-key-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9998;}
+  #api-key-overlay{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9998;}
   .api-key-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:420px;width:90%;text-align:center;}
   .api-key-box h2{margin-bottom:6px;font-size:1.05rem;}
   .api-key-box p{color:var(--text2);font-size:.82rem;margin-bottom:14px;line-height:1.5;}
@@ -152,7 +152,7 @@
   .view-dashboard .stats-row{display:flex;}
 
   /* MODAL */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay{display:none;position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
   .modal-overlay.open{display:flex;}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:13px;width:min(560px,95vw);max-height:88vh;overflow-y:auto;padding:24px;}
   .modal h2{font-size:.95rem;margin-bottom:16px;}
@@ -168,6 +168,50 @@
   .msg{padding:8px 12px;border-radius:7px;font-size:.8rem;margin-top:9px;}
   .msg.ok{background:rgba(76,175,130,.15);color:var(--green);}
   .msg.err{background:rgba(255,82,82,.15);color:var(--red);}
+
+  /* ── MOBILE / RESPONSIVE ─────────────────────── */
+  @media(max-width:768px){
+    body{height:auto;min-height:100vh;overflow:auto;-webkit-overflow-scrolling:touch;}
+    header{flex-wrap:wrap;gap:8px;padding:8px 12px;}
+    .logo{font-size:.85rem;}
+    .tab{padding:5px 12px;font-size:.78rem;}
+    header .spacer{display:none;}
+    .hbtn{padding:6px 10px;font-size:.75rem;}
+
+    .app-body{flex-direction:column;overflow:auto;-webkit-overflow-scrolling:touch;}
+    .view-agent{flex-direction:column;overflow:auto;}
+    .agent-col{width:100%;min-width:0;border-right:none;border-bottom:1px solid var(--border);max-height:50vh;}
+    .dashboard-col{overflow:auto;-webkit-overflow-scrolling:touch;}
+
+    .stats-row{flex-wrap:wrap;}
+    .stat-cell{min-width:33.3%;padding:8px 10px;}
+    .stat-val{font-size:1.15rem;}
+
+    .toolbar{gap:6px;padding:8px 10px;}
+    .search-wrap{min-width:100%;flex-basis:100%;}
+    .filter-select{flex:1;min-width:0;font-size:.75rem;padding:6px 8px;}
+
+    .cards-scroll{padding:10px;}
+    .grid{grid-template-columns:1fr;gap:9px;}
+    .card{padding:11px;}
+
+    .fg{grid-template-columns:1fr;}
+
+    .agent-input textarea{font-size:16px;}
+    .auth-box input{font-size:16px;}
+    .api-key-box input{font-size:16px;}
+    .field input,.field select,.field textarea{font-size:16px;}
+  }
+
+  @media(max-width:400px){
+    header{padding:6px 8px;}
+    .logo{font-size:.78rem;}
+    .tab{padding:4px 9px;font-size:.72rem;}
+    .hbtn{padding:5px 8px;font-size:.7rem;}
+    .stat-cell{min-width:50%;}
+    .agent-col{max-height:45vh;}
+    .modal{padding:16px;border-radius:10px;}
+  }
 
   /* hidden */
   .hidden{display:none!important;}
@@ -367,19 +411,6 @@ function skipApiKey(){document.getElementById("api-key-overlay").style.display="
 function promptApiKey(){document.getElementById("api-key-input").value=getApiKey();document.getElementById("api-key-overlay").style.display="flex";}
 document.getElementById("api-key-input").addEventListener("keydown",function(e){if(e.key==="Enter")saveApiKey();});
 
-// Auto-login if already authed this session
-if(sessionStorage.getItem(AUTH_STORAGE_KEY)==="1"){
-  document.getElementById("auth-screen").style.display="none";
-  document.getElementById("app").style.display="flex";
-  initApp();
-}
-
-function initApp(){
-  if(!getApiKey())document.getElementById("api-key-overlay").style.display="flex";
-  loadData();
-  switchView('agent');
-}
-
 /* ═══════════════════════════════════════════════
    ORIGINAL APP CODE (artifact)
    ═══════════════════════════════════════════════ */
@@ -388,6 +419,19 @@ const SB_KEY="sb_publishable_uyzjAWCUrveeUHsP0m-X3Q_QGQ21Rkw";
 const SBH={"apikey":SB_KEY,"Authorization":`Bearer ${SB_KEY}`,"Content-Type":"application/json"};
 
 let allData=[], agentRunning=false, currentView='agent';
+
+function initApp(){
+  if(!getApiKey())document.getElementById("api-key-overlay").style.display="flex";
+  loadData();
+  switchView('agent');
+}
+
+// Auto-login if already authed this session
+if(sessionStorage.getItem(AUTH_STORAGE_KEY)==="1"){
+  document.getElementById("auth-screen").style.display="none";
+  document.getElementById("app").style.display="flex";
+  initApp();
+}
 
 // ── VIEWS ────────────────────────────────────────────────────
 function switchView(v) {

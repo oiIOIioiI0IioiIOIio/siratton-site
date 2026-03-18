@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="robots" content="noindex, nofollow">
+<title>Automédiathèque</title>
+<style>
+  :root {
+    --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3250;
+    --accent:#6c63ff;--text:#e8eaf0;--text2:#8b90a7;
+    --green:#4caf82;--orange:#f5a623;--red:#ff5252;--tag-bg:#252942;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+  /* AUTH SCREEN */
+  #auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+  .auth-box{text-align:center;max-width:340px;width:90%;}
+  .auth-box h1{font-size:1.3rem;margin-bottom:.4rem;color:var(--text);}
+  .auth-box p{font-size:.82rem;color:var(--text2);margin-bottom:1.4rem;}
+  .auth-box input{width:100%;padding:11px 15px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;outline:none;margin-bottom:10px;}
+  .auth-box input:focus{border-color:var(--accent);}
+  .auth-box button{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:600;transition:opacity .2s;}
+  .auth-box button:hover{opacity:.85;}
+  .auth-error{color:var(--red);font-size:.82rem;margin-top:6px;display:none;}
+
+  /* API KEY OVERLAY */
+  #api-key-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9998;}
+  .api-key-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:420px;width:90%;text-align:center;}
+  .api-key-box h2{margin-bottom:6px;font-size:1.05rem;}
+  .api-key-box p{color:var(--text2);font-size:.82rem;margin-bottom:14px;line-height:1.5;}
+  .api-key-box input{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.88rem;margin-bottom:12px;outline:none;}
+  .api-key-box input:focus{border-color:var(--accent);}
+  .api-key-btns{display:flex;gap:8px;}
+  .api-key-btns button{flex:1;padding:9px;border-radius:7px;font-size:.88rem;cursor:pointer;font-weight:600;transition:opacity .2s;border:none;}
+  .api-key-btns .ak-save{background:var(--accent);color:#fff;}
+  .api-key-btns .ak-skip{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+  .api-key-btns button:hover{opacity:.85;}
+
+  /* HEADER */
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10;}
+  .logo{font-size:.95rem;font-weight:800;color:var(--accent);white-space:nowrap;letter-spacing:.02em;}
+  .logo span{color:var(--text2);font-weight:400;}
+  .tab-bar{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;}
+  .tab{padding:6px 16px;border-radius:6px;font-size:.82rem;cursor:pointer;color:var(--text2);transition:all .2s;border:none;background:transparent;font-weight:600;}
+  .tab.active{background:var(--accent);color:#fff;}
+  .tab:hover:not(.active){color:var(--text);}
+  header .spacer{flex:1;}
+  .hbtn{border:none;padding:7px 13px;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:600;transition:opacity .2s;}
+  .hbtn-p{background:var(--accent);color:#fff;}.hbtn-p:hover{opacity:.85;}
+  .hbtn-s{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}.hbtn-s:hover{color:var(--text);}
+
+  /* LAYOUT */
+  .app-body{display:flex;flex:1;overflow:hidden;}
+
+  /* ── VUE AGENT (principale) ── */
+  .view-agent{display:flex;flex:1;overflow:hidden;}
+
+  /* Agent left */
+  .agent-col{width:380px;min-width:380px;background:#13161f;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+  .agent-top{padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+  .agent-top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .agent-title-wrap{display:flex;align-items:center;gap:8px;}
+  .agent-status-dot{width:8px;height:8px;border-radius:50%;background:var(--text2);}
+  .agent-status-dot.working{background:var(--orange);box-shadow:0 0 6px var(--orange);animation:pulse 1s infinite;}
+  .agent-status-dot.ready{background:var(--green);box-shadow:0 0 6px var(--green);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .agent-label{font-size:.82rem;font-weight:700;color:var(--text);}
+  .agent-powered{font-size:.7rem;color:var(--text2);}
+  .criteria-toggle{font-size:.73rem;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+  .criteria-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:.74rem;color:var(--text2);line-height:1.6;margin-bottom:0;}
+  .criteria-box strong{color:var(--text);}
+  .agent-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:7px;}
+  .log-entry{font-size:.79rem;padding:8px 10px;border-radius:7px;line-height:1.55;}
+  .log-sys{background:var(--surface2);color:var(--text2);border-left:3px solid var(--border);}
+  .log-user{background:rgba(108,99,255,.12);color:var(--text);border-left:3px solid var(--accent);}
+  .log-agent{background:rgba(76,175,130,.08);color:var(--text);border-left:3px solid var(--green);}
+  .log-err{background:rgba(255,82,82,.1);color:var(--red);border-left:3px solid var(--red);}
+  .log-think{color:var(--text2);font-style:italic;display:flex;align-items:center;gap:8px;font-size:.78rem;}
+  .mini-spin{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .preview-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.77rem;display:flex;flex-direction:column;gap:3px;}
+  .pi-name{font-weight:600;color:var(--text);}
+  .pi-meta{color:var(--text2);}
+  .pi-ok{color:var(--green);font-size:.71rem;}
+  .pi-err{color:var(--red);font-size:.71rem;}
+  .agent-input{padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;}
+  .agent-input textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:.83rem;outline:none;resize:none;font-family:inherit;line-height:1.5;transition:border-color .2s;}
+  .agent-input textarea:focus{border-color:var(--accent);}
+  .agent-btns{display:flex;gap:7px;margin-top:8px;}
+  .btn-go{flex:1;background:var(--accent);color:#fff;border:none;padding:9px;border-radius:7px;cursor:pointer;font-size:.84rem;font-weight:700;transition:opacity .2s;}
+  .btn-go:hover{opacity:.85;}.btn-go:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-clr{background:transparent;border:1px solid var(--border);color:var(--text2);padding:9px 11px;border-radius:7px;cursor:pointer;font-size:.77rem;}
+  .btn-clr:hover{color:var(--text);}
+
+  /* Dashboard right */
+  .dashboard-col{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+  /* Stats row */
+  .stats-row{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+  .stat-cell{flex:1;min-width:90px;padding:12px 16px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+  .stat-cell:last-child{border-right:none;}
+  .stat-val{font-size:1.5rem;font-weight:800;color:var(--accent);}
+  .stat-lbl{font-size:.68rem;color:var(--text2);margin-top:1px;text-transform:uppercase;letter-spacing:.05em;}
+  .stat-sub{font-size:.7rem;color:var(--text2);margin-top:3px;}
+
+  /* Filters + search bar */
+  .toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+  .search-wrap{position:relative;flex:1;min-width:160px;}
+  .search-wrap input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 11px 7px 32px;border-radius:7px;font-size:.82rem;outline:none;transition:border-color .2s;}
+  .search-wrap input:focus{border-color:var(--accent);}
+  .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:.8rem;}
+  .filter-select{background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px 10px;border-radius:7px;font-size:.8rem;outline:none;cursor:pointer;}
+  .filter-select:focus{border-color:var(--accent);}
+  .clr-filters{font-size:.75rem;color:var(--text2);cursor:pointer;padding:4px 8px;border-radius:5px;border:1px dashed var(--border);background:transparent;}
+  .clr-filters:hover{color:var(--text);}
+  .results-info{font-size:.75rem;color:var(--text2);white-space:nowrap;}
+
+  /* Cards */
+  .cards-scroll{flex:1;overflow-y:auto;padding:14px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .15s;}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .card.flash{border-color:var(--green);animation:cardflash 3s ease-out forwards;}
+  @keyframes cardflash{0%,40%{border-color:var(--green);box-shadow:0 0 10px rgba(76,175,130,.3);}100%{border-color:var(--border);box-shadow:none;}}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;}
+  .card-name{font-size:.88rem;font-weight:600;}
+  .card-name a{color:var(--text);text-decoration:none;}.card-name a:hover{color:var(--accent);}
+  .badge{font-size:.63rem;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+  .s-online{background:rgba(76,175,130,.15);color:var(--green);}
+  .s-offline{background:rgba(255,82,82,.15);color:var(--red);}
+  .s-archived{background:rgba(245,166,35,.15);color:var(--orange);}
+  .s-proposed{background:rgba(108,99,255,.15);color:var(--accent);}
+  .card-desc{font-size:.77rem;color:var(--text2);line-height:1.5;flex:1;}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;}
+  .tag{font-size:.67rem;background:var(--tag-bg);color:var(--text2);padding:2px 6px;border-radius:4px;}
+  .t-type{color:#a78bfa;}.t-country{color:#60a5fa;}.t-lang{color:#34d399;}.t-theme{color:#f59e0b;}
+  .card-url{font-size:.7rem;color:var(--accent);opacity:.75;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .card-url:hover{opacity:1;}
+  .empty{text-align:center;padding:50px 20px;color:var(--text2);}
+  .loading{text-align:center;padding:50px;color:var(--text2);}
+  .spinner{display:inline-block;width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:10px;}
+
+  /* ── VUE DASHBOARD (seule) ── */
+  .view-dashboard{display:none;flex:1;flex-direction:column;overflow:hidden;}
+  .view-dashboard .toolbar{padding:10px 18px;}
+  .view-dashboard .cards-scroll{padding:14px 18px;}
+  .view-dashboard .stats-row{display:flex;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:13px;width:min(560px,95vw);max-height:88vh;overflow-y:auto;padding:24px;}
+  .modal h2{font-size:.95rem;margin-bottom:16px;}
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .ff{grid-column:1/-1;}
+  .field label{display:block;font-size:.7rem;color:var(--text2);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+  .field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:7px;font-size:.83rem;outline:none;font-family:inherit;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .modal-btns{display:flex;gap:9px;justify-content:flex-end;margin-top:16px;}
+  .btn-cancel{background:transparent;border:1px solid var(--border);color:var(--text2);padding:7px 15px;border-radius:7px;cursor:pointer;font-size:.83rem;}
+  .btn-submit{background:var(--accent);color:#fff;border:none;padding:7px 17px;border-radius:7px;cursor:pointer;font-size:.83rem;font-weight:600;}
+  .btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+  .msg{padding:8px 12px;border-radius:7px;font-size:.8rem;margin-top:9px;}
+  .msg.ok{background:rgba(76,175,130,.15);color:var(--green);}
+  .msg.err{background:rgba(255,82,82,.15);color:var(--red);}
+
+  /* hidden */
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>🔒 Espace de travail</h1>
+    <p>Accès réservé — entrez le mot de passe</p>
+    <input type="password" id="auth-password" placeholder="Mot de passe" autofocus>
+    <button onclick="checkAuth()">Accéder</button>
+    <div class="auth-error" id="auth-error">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- ============ API KEY OVERLAY ============ -->
+<div id="api-key-overlay">
+  <div class="api-key-box">
+    <h2>🔑 Clé API Anthropic</h2>
+    <p>Entrez votre clé API. Elle sera stockée dans votre navigateur (localStorage) et ne sera jamais envoyée ailleurs qu'à l'API Anthropic.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-...">
+    <div class="api-key-btns">
+      <button class="ak-save" onclick="saveApiKey()">Enregistrer</button>
+      <button class="ak-skip" onclick="skipApiKey()">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN APP (hidden until auth) ============ -->
+<div id="app" style="display:none;flex-direction:column;height:100vh;">
+
+<header>
+  <div class="logo">Auto<span>médiathèque</span></div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchView('agent')">⚡ Agent</button>
+    <button class="tab" onclick="switchView('dashboard')">📊 Dashboard</button>
+  </div>
+  <div class="spacer"></div>
+  <button class="hbtn hbtn-s" onclick="promptApiKey()">🔑 Clé</button>
+  <button class="hbtn hbtn-s" onclick="loadData()">↺ Sync</button>
+  <button class="hbtn hbtn-p" onclick="openModal()">＋ Manuel</button>
+</header>
+
+<div class="app-body">
+
+  <!-- ══ VUE AGENT ══ -->
+  <div class="view-agent" id="viewAgent">
+
+    <!-- Colonne Agent -->
+    <div class="agent-col">
+      <div class="agent-top">
+        <div class="agent-top-row">
+          <div class="agent-title-wrap">
+            <div class="agent-status-dot" id="agentDot"></div>
+            <span class="agent-label">Agent IA</span>
+            <span class="agent-powered">· Claude</span>
+          </div>
+          <span class="criteria-toggle" onclick="toggleCriteria()">voir critères</span>
+        </div>
+        <div id="criteriaBox" class="criteria-box hidden">
+          <strong>Critères de sélection</strong><br>
+          ✅ Autoproduction par les personnes concernées<br>
+          ✅ Autonomie éditoriale (hors partis, États, marchands)<br>
+          ✅ Finalité : documenter, contre-narrer, archiver<br>
+          ✅ Tous formats (vidéo, podcast, Telegram, zine…)<br>
+          ✅ Dimension collective<br><br>
+          <strong>Approche décoloniale</strong><br>
+          🌍 Chercher activement hors du monde occidental<br>
+          🌍 Ne pas valider selon les standards des grandes agences<br>
+          🌍 Accepter les formats locaux (radio communautaire, WhatsApp, oral filmé…)<br>
+          🌍 Chercher dans la langue d'origine, pas seulement en anglais<br>
+          🌍 Ne pas hiérarchiser selon la "professionnalisation"<br><br>
+          <strong>Règles</strong><br>
+          ⚙️ Contextes de conflit : critères assouplis si documentation<br>
+          ⚙️ Inactifs : inclus, statut archivé + note<br>
+          ❌ Journalistes pro extérieurs à la situation (Blast, Mediapart…)
+        </div>
+      </div>
+      <div class="agent-log" id="agentLog">
+        <div class="log-entry log-sys">👋 Donne-moi un thème ou des exemples.<br><br>Ex : <em>"automédias ouvriers en Amérique latine"</em>, <em>"radio communautaires africaines"</em>, <em>"documentaires autochtones"</em>...<br><br>Je chercherai en tenant compte des critères déontologiques et décoloniaux, puis j'insérerai directement dans Supabase.</div>
+      </div>
+      <div class="agent-input">
+        <textarea id="agentInput" rows="3" placeholder="Thème, zone, format, exemples… (Ctrl+Entrée pour lancer)" onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey))runAgent()"></textarea>
+        <div class="agent-btns">
+          <button class="btn-clr" onclick="clearLog()">✕ Log</button>
+          <button class="btn-go" id="btnGo" onclick="runAgent()">⚡ Lancer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne Dashboard inline -->
+    <div class="dashboard-col">
+      <div class="stats-row" id="statsRow2"><div style="padding:14px 18px;color:var(--text2);font-size:.8rem;">Chargement…</div></div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="si">🔍</span><input type="text" id="si2" placeholder="Rechercher…" oninput="applyFilters()"></div>
+        <select class="filter-select" id="ff-type" onchange="applyFilters()"><option value="">Tous formats</option></select>
+        <select class="filter-select" id="ff-country" onchange="applyFilters()"><option value="">Tous pays</option></select>
+        <select class="filter-select" id="ff-lang" onchange="applyFilters()"><option value="">Toutes langues</option></select>
+        <select class="filter-select" id="ff-theme" onchange="applyFilters()"><option value="">Tous thèmes</option></select>
+        <select class="filter-select" id="ff-status" onchange="applyFilters()"><option value="">Tous statuts</option></select>
+        <button class="clr-filters" onclick="clearFilters()">✕</button>
+        <span class="results-info" id="resInfo2"></span>
+      </div>
+      <div class="cards-scroll"><div id="cardsAgent"><div class="loading"><div class="spinner"></div><br>Connexion Supabase…</div></div></div>
+    </div>
+  </div>
+
+  <!-- ══ VUE DASHBOARD SEUL ══ -->
+  <div class="view-dashboard" id="viewDash">
+    <div class="stats-row" id="statsRow1"></div>
+    <div class="toolbar">
+      <div class="search-wrap"><span class="si">🔍</span><input type="text" id="si1" placeholder="Rechercher…" oninput="applyFilters()"></div>
+      <select class="filter-select" id="fd-type" onchange="applyFilters()"><option value="">Tous formats</option></select>
+      <select class="filter-select" id="fd-country" onchange="applyFilters()"><option value="">Tous pays</option></select>
+      <select class="filter-select" id="fd-lang" onchange="applyFilters()"><option value="">Toutes langues</option></select>
+      <select class="filter-select" id="fd-theme" onchange="applyFilters()"><option value="">Tous thèmes</option></select>
+      <select class="filter-select" id="fd-status" onchange="applyFilters()"><option value="">Tous statuts</option></select>
+      <button class="clr-filters" onclick="clearFilters()">✕ Filtres</button>
+      <span class="results-info" id="resInfo1"></span>
+    </div>
+    <div class="cards-scroll"><div id="cardsDash"></div></div>
+  </div>
+
+</div>
+
+<!-- MODAL MANUEL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2>➕ Ajout manuel</h2>
+    <div class="fg">
+      <div class="field"><label>Nom *</label><input type="text" id="f_name"></div>
+      <div class="field"><label>URL *</label><input type="url" id="f_url"></div>
+      <div class="field"><label>Format</label>
+        <select id="f_type"><option value="">—</option><option>site</option><option>vidéo</option><option>podcast</option><option>newsletter</option><option>telegram</option><option>instagram</option><option>twitter/X</option><option>journal</option><option>magazine</option><option>zine</option><option>radio</option><option>film</option><option>collectif</option><option>autre</option></select>
+      </div>
+      <div class="field"><label>Pays / Zone</label><input type="text" id="f_country"></div>
+      <div class="field"><label>Langue(s)</label><input type="text" id="f_languages" placeholder="fr, en…"></div>
+      <div class="field"><label>Statut</label>
+        <select id="f_status"><option value="online">En ligne</option><option value="offline">Hors ligne</option><option value="archived">Archivé</option><option value="proposed">Proposé</option></select>
+      </div>
+      <div class="field ff"><label>Thème(s)</label><input type="text" id="f_theme" placeholder="travail, féminisme, migrations…"></div>
+      <div class="field ff"><label>Description *</label><textarea id="f_desc"></textarea></div>
+      <div class="field ff"><label>Notes</label><textarea id="f_notes" style="min-height:45px"></textarea></div>
+    </div>
+    <div id="formMsg"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitForm()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ============ OPTIONAL EXTERNAL CONFIG ============ -->
+<script src="assets/agent-config.js" onerror="window.__configMissing=true;"></script>
+
+<script>
+/* ═══════════════════════════════════════════════
+   AUTH + API KEY MANAGEMENT
+   ═══════════════════════════════════════════════ */
+const AUTH_PASSWORD="automedia2026";
+const AUTH_STORAGE_KEY="autodetection_auth";
+const API_KEY_STORAGE="autodetection_anthropic_key";
+
+function getApiKey(){
+  if(typeof ANTHROPIC_API_KEY!=="undefined"&&ANTHROPIC_API_KEY&&ANTHROPIC_API_KEY!=="REMPLACER_PAR_LA_CLÉ"&&ANTHROPIC_API_KEY!=="")return ANTHROPIC_API_KEY;
+  return localStorage.getItem(API_KEY_STORAGE)||"";
+}
+
+function checkAuth(){
+  var pw=document.getElementById("auth-password").value;
+  if(pw===AUTH_PASSWORD){
+    sessionStorage.setItem(AUTH_STORAGE_KEY,"1");
+    document.getElementById("auth-screen").style.display="none";
+    document.getElementById("app").style.display="flex";
+    initApp();
+  }else{
+    document.getElementById("auth-error").style.display="block";
+    document.getElementById("auth-password").value="";
+  }
+}
+function logout(){
+  sessionStorage.removeItem(AUTH_STORAGE_KEY);
+  location.reload();
+}
+document.getElementById("auth-password").addEventListener("keydown",function(e){if(e.key==="Enter")checkAuth();});
+
+function saveApiKey(){
+  var key=document.getElementById("api-key-input").value.trim();
+  if(key){localStorage.setItem(API_KEY_STORAGE,key);document.getElementById("api-key-overlay").style.display="none";}
+}
+function skipApiKey(){document.getElementById("api-key-overlay").style.display="none";}
+function promptApiKey(){document.getElementById("api-key-input").value=getApiKey();document.getElementById("api-key-overlay").style.display="flex";}
+document.getElementById("api-key-input").addEventListener("keydown",function(e){if(e.key==="Enter")saveApiKey();});
+
+// Auto-login if already authed this session
+if(sessionStorage.getItem(AUTH_STORAGE_KEY)==="1"){
+  document.getElementById("auth-screen").style.display="none";
+  document.getElementById("app").style.display="flex";
+  initApp();
+}
+
+function initApp(){
+  if(!getApiKey())document.getElementById("api-key-overlay").style.display="flex";
+  loadData();
+  switchView('agent');
+}
+
+/* ═══════════════════════════════════════════════
+   ORIGINAL APP CODE (artifact)
+   ═══════════════════════════════════════════════ */
+const SB_URL="https://fnxxhuyqhhpfjvgmcbjz.supabase.co";
+const SB_KEY="sb_publishable_uyzjAWCUrveeUHsP0m-X3Q_QGQ21Rkw";
+const SBH={"apikey":SB_KEY,"Authorization":`Bearer ${SB_KEY}`,"Content-Type":"application/json"};
+
+let allData=[], agentRunning=false, currentView='agent';
+
+// ── VIEWS ────────────────────────────────────────────────────
+function switchView(v) {
+  currentView=v;
+  document.getElementById('viewAgent').style.display=v==='agent'?'flex':'none';
+  document.getElementById('viewDash').style.display=v==='dashboard'?'flex':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&v==='agent')||(i===1&&v==='dashboard')));
+  applyFilters();
+}
+
+// ── SUPABASE ─────────────────────────────────────────────────
+async function sbFetch(table) {
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?select=*&order=created_at.desc`,{headers:SBH});
+  if(!r.ok)return[];
+  return r.json();
+}
+async function sbInsert(p) {
+  const r=await fetch(`${SB_URL}/rest/v1/propositions`,{method:'POST',headers:{...SBH,'Prefer':'return=representation'},body:JSON.stringify(p)});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.message||`HTTP ${r.status}`);
+  return d;
+}
+async function loadData() {
+  try {
+    const [m,p]=await Promise.all([sbFetch('automedias').catch(()=>[]),sbFetch('propositions').catch(()=>[])]);
+    allData=[...m.map(d=>({...d,_src:'automedias'})),...p.map(d=>({...d,_src:'propositions',status:d.status||'proposed'}))];
+    buildSelects(); applyFilters(); buildStats();
+  } catch(e) {
+    ['cardsAgent','cardsDash'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=`<div class="empty">⚠️ ${e.message}</div>`;});
+  }
+}
+
+// ── STATS ────────────────────────────────────────────────────
+function buildStats() {
+  const t=allData.length;
+  const on=allData.filter(d=>d.status==='online').length;
+  const pr=allData.filter(d=>d._src==='propositions').length;
+  const countries=new Set(allData.map(d=>d.country).filter(Boolean)).size;
+  const langCount=allData.reduce((acc,d)=>{const v=d.languages;if(!v)return acc;(Array.isArray(v)?v:String(v).split(/[,;]/).map(x=>x.trim())).filter(Boolean).forEach(l=>acc.add(l));return acc;},new Set()).size;
+  const types=new Set(allData.map(d=>d.type).filter(Boolean)).size;
+  const html=`
+    <div class="stat-cell"><div class="stat-val">${t}</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-cell"><div class="stat-val">${on}</div><div class="stat-lbl">En ligne</div></div>
+    <div class="stat-cell"><div class="stat-val">${pr}</div><div class="stat-lbl">Propositions</div></div>
+    <div class="stat-cell"><div class="stat-val">${countries}</div><div class="stat-lbl">Pays / zones</div></div>
+    <div class="stat-cell"><div class="stat-val">${langCount}</div><div class="stat-lbl">Langues</div></div>
+    <div class="stat-cell"><div class="stat-val">${types}</div><div class="stat-lbl">Formats</div></div>`;
+  ['statsRow1','statsRow2'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+}
+
+// ── SELECTS FILTRES ──────────────────────────────────────────
+function norm(v){if(!v)return'';if(Array.isArray(v))return v.join(', ');return String(v);}
+function getVals(key){const s=new Set();allData.forEach(d=>{const v=d[key];if(!v)return;(Array.isArray(v)?v:String(v).split(/[,;\/]/).map(x=>x.trim())).filter(Boolean).forEach(x=>s.add(x));});return[...s].sort();}
+function fillSelect(id,vals) {
+  const el=document.getElementById(id); if(!el)return;
+  const cur=el.value, first=el.options[0].text;
+  el.innerHTML=`<option value="">${first}</option>`+vals.map(v=>`<option value="${v}">${v}</option>`).join('');
+  if(vals.includes(cur))el.value=cur;
+}
+function buildSelects() {
+  const types=getVals('type'),countries=getVals('country'),langs=getVals('languages'),themes=getVals('theme'),statuses=getVals('status');
+  ['ff-type','fd-type'].forEach(id=>fillSelect(id,types));
+  ['ff-country','fd-country'].forEach(id=>fillSelect(id,countries));
+  ['ff-lang','fd-lang'].forEach(id=>fillSelect(id,langs));
+  ['ff-theme','fd-theme'].forEach(id=>fillSelect(id,themes));
+  ['ff-status','fd-status'].forEach(id=>fillSelect(id,statuses));
+}
+
+// ── FILTRES ──────────────────────────────────────────────────
+function getF(prefix) {
+  const g=id=>document.getElementById(id)?.value||'';
+  return {type:g(`${prefix}-type`),country:g(`${prefix}-country`),lang:g(`${prefix}-lang`),theme:g(`${prefix}-theme`),status:g(`${prefix}-status`)};
+}
+function matchF(d,key,val) {
+  if(!val)return true;const v=d[key];if(!v)return false;
+  return(Array.isArray(v)?v:String(v).split(/[,;\/]/).map(x=>x.trim())).some(x=>x.toLowerCase()===val.toLowerCase());
+}
+function filterData(q,f) {
+  return allData.filter(d=>{
+    if(q&&!`${norm(d.name)} ${norm(d.description)} ${norm(d.url)} ${norm(d.theme)} ${norm(d.notes)}`.toLowerCase().includes(q.toLowerCase()))return false;
+    return matchF(d,'type',f.type)&&matchF(d,'country',f.country)&&matchF(d,'languages',f.lang)&&matchF(d,'theme',f.theme)&&matchF(d,'status',f.status);
+  });
+}
+function applyFilters() {
+  if(currentView==='agent') {
+    const q=document.getElementById('si2')?.value||'', f=getF('ff');
+    const res=filterData(q,f);
+    const el=document.getElementById('cardsAgent'); if(el){el.innerHTML=`<div class="grid">${res.map(d=>cardHTML(d)).join('')}</div>`||'<div class="empty">Aucun résultat.</div>';}
+    const ri=document.getElementById('resInfo2'); if(ri)ri.textContent=`${res.length} / ${allData.length}`;
+  } else {
+    const q=document.getElementById('si1')?.value||'', f=getF('fd');
+    const res=filterData(q,f);
+    const el=document.getElementById('cardsDash'); if(el){el.innerHTML=res.length?`<div class="grid">${res.map(d=>cardHTML(d)).join('')}</div>`:'<div class="empty">Aucun résultat.</div>';}
+    const ri=document.getElementById('resInfo1'); if(ri)ri.textContent=`${res.length} / ${allData.length} automédias`;
+  }
+}
+function clearFilters() {
+  ['ff-type','ff-country','ff-lang','ff-theme','ff-status','fd-type','fd-country','fd-lang','fd-theme','fd-status'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['si1','si2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  applyFilters();
+}
+
+// ── CARD HTML ────────────────────────────────────────────────
+function sbadge(s){const m={online:['s-online','En ligne'],offline:['s-offline','Hors ligne'],archived:['s-archived','Archivé'],proposed:['s-proposed','Proposé']};const[c,l]=m[s]||m['proposed'];return`<span class="badge ${c}">${l}</span>`;}
+function cardHTML(d,flash=false) {
+  const tags=[];
+  if(d.type)tags.push(`<span class="tag t-type">${d.type}</span>`);
+  norm(d.country).split(/[,;]/).map(x=>x.trim()).filter(Boolean).forEach(c=>tags.push(`<span class="tag t-country">📍${c}</span>`));
+  norm(d.languages).split(/[,;]/).map(x=>x.trim()).filter(Boolean).forEach(l=>tags.push(`<span class="tag t-lang">${l}</span>`));
+  norm(d.theme).split(/[,;]/).map(x=>x.trim()).filter(Boolean).forEach(t=>tags.push(`<span class="tag t-theme">${t}</span>`));
+  const src=d._src==='propositions'?'<span style="font-size:.65rem;color:var(--accent);opacity:.6"> · proposé</span>':'';
+  return`<div class="card${flash?' flash':''}">
+    <div class="card-head"><div class="card-name">${d.url?`<a href="${d.url}" target="_blank" rel="noopener noreferrer">${d.name||'?'}</a>`:(d.name||'?')}${src}</div>${sbadge(d.status)}</div>
+    ${d.description?`<div class="card-desc">${d.description}</div>`:''}
+    ${tags.length?`<div class="tags">${tags.join('')}</div>`:''}
+    ${d.url?`<a class="card-url" href="${d.url}" target="_blank" rel="noopener noreferrer">${d.url}</a>`:''}
+  </div>`;
+}
+
+// ── AGENT ────────────────────────────────────────────────────
+function toggleCriteria(){document.getElementById('criteriaBox').classList.toggle('hidden');}
+function setDot(s){const d=document.getElementById('agentDot');d.className='agent-status-dot'+(s?' '+s:'');}
+function addLog(type,html){const log=document.getElementById('agentLog');const div=document.createElement('div');div.className=`log-entry log-${type}`;div.innerHTML=html;log.appendChild(div);log.scrollTop=log.scrollHeight;return div;}
+function clearLog(){document.getElementById('agentLog').innerHTML='';}
+
+const SYSTEM_PROMPT=`Tu es un agent de recherche spécialisé en automédias : collectifs, sites, chaînes, podcasts, newsletters, radios communautaires, comptes autogérés, films, zines — tout format — qui produisent leur propre information depuis un point de vue situé, militant, communautaire ou alternatif.
+
+CRITÈRES DE SÉLECTION STRICTS :
+1. Autoproduction par les personnes DIRECTEMENT CONCERNÉES (pas des journalistes pro extérieurs)
+2. Autonomie éditoriale (pas de contrôle par partis, États, groupes commerciaux)
+3. Finalité : documenter, contre-narrer, archiver depuis l'intérieur
+4. Dimension collective (pas de comptes strictement personnels)
+5. Tous formats acceptés : site, vidéo, podcast, Telegram, Instagram, zine, radio, film, journal papier, newsletter, WhatsApp...
+6. Médias inactifs : inclus avec statut "archived" et note sur l'arrêt
+7. Contextes de conflit/autoritaires : critères assouplis si finalité documentaire
+
+IMPÉRATIF DÉCOLONIAL — tu dois activement :
+- Chercher des automédias hors du monde occidental et anglophone/francophone
+- Ne pas valider selon les standards des grandes agences de presse occidentales (AP, Reuters, AFP)
+- Accepter les formats locaux : radio communautaire, vidéo sur WhatsApp, oral filmé, presse en langue minorée
+- Chercher dans la langue d'origine des collectifs, pas seulement en anglais ou français
+- Ne pas hiérarchiser selon le degré de "professionnalisation" ou de visibilité numérique
+- Inclure des automédias d'Afrique, d'Asie du Sud-Est, d'Amérique latine, du Moyen-Orient, d'Europe de l'Est, de zones autochtones
+- Si le thème est global, répartir géographiquement
+
+EXCLUSIONS :
+- Journalistes professionnels extérieurs à la situation (Mediapart, Blast, etc.)
+- Médias de partis, d'État, financés majoritairement par institutions
+- Désinformation / complotisme
+- Comptes strictement personnels
+
+Retourne UNIQUEMENT un objet JSON valide, sans texte autour, sans backticks, sans markdown. Format :
+{"results":[{"name":"...","url":"...","type":"site|vidéo|podcast|newsletter|telegram|instagram|twitter/X|journal|magazine|zine|radio|film|collectif|autre","country":"...","languages":["fr"],"status":"online|offline|archived","description":"1-2 phrases contextuelles en français","theme":"thème1, thème2","notes":"null ou précisions sur inactivité etc"}]}
+
+Trouve entre 6 et 14 automédias. Vise la diversité géographique, linguistique et de format.`;
+
+async function runAgent() {
+  const inp=document.getElementById('agentInput').value.trim();
+  if(!inp||agentRunning)return;
+  const key=getApiKey();
+  if(!key){addLog('err','❌ Aucune clé API configurée. Cliquez sur 🔑 Clé pour en ajouter une.');return;}
+  agentRunning=true;
+  const btn=document.getElementById('btnGo');btn.disabled=true;btn.textContent='En cours…';
+  setDot('working');
+  addLog('user',`<strong>Thème :</strong> ${inp}`);
+  const thinking=addLog('think','<span class="mini-spin"></span> Recherche en cours (web search activée)…');
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:'POST',
+      headers:{
+        "Content-Type":"application/json",
+        "x-api-key":key,
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
+      },
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",max_tokens:4000,
+        system:SYSTEM_PROMPT,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:`Recherche des automédias sur : ${inp}`}]
+      })
+    });
+    thinking.remove();
+    if(!res.ok){const e=await res.json().catch(()=>({}));addLog('err',`❌ Erreur API : ${e.error?.message||res.status}`);reset();return;}
+    const data=await res.json();
+    let raw='';
+    for(const b of data.content){if(b.type==='text')raw+=b.text;}
+    const clean=raw.replace(/```json|```/gi,'').trim();
+    let parsed;
+    try{parsed=JSON.parse(clean);}catch(e){const m=clean.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('Réponse non parseable');}
+    const items=parsed.results||parsed;
+    if(!Array.isArray(items)||!items.length)throw new Error('Aucun résultat retourné');
+    addLog('agent',`✅ <strong>${items.length} automédias identifiés</strong>. Insertion dans Supabase…`);
+    let ok=0,fail=0;
+    for(const item of items){
+      const prev=document.createElement('div');prev.className='preview-item';
+      prev.innerHTML=`<div class="pi-name">${item.name}</div><div class="pi-meta">${[item.type,item.country,(item.languages||[]).join(', ')].filter(Boolean).join(' · ')}</div>`;
+      document.getElementById('agentLog').appendChild(prev);
+      document.getElementById('agentLog').scrollTop=document.getElementById('agentLog').scrollHeight;
+      try {
+        await sbInsert({name:item.name,url:item.url,type:item.type,country:item.country,languages:item.languages,status:item.status||'online',description:item.description,theme:item.theme||inp,notes:item.notes||null,orientation:null});
+        prev.innerHTML+=`<div class="pi-ok">✓ Ajouté</div>`;ok++;
+        allData.unshift({...item,_src:'propositions',status:item.status||'online',theme:item.theme||inp,orientation:null});
+        buildSelects();applyFilters();buildStats();
+      } catch(e){prev.innerHTML+=`<div class="pi-err">✗ ${e.message}</div>`;fail++;}
+      await new Promise(r=>setTimeout(r,250));
+    }
+    addLog('agent',`🎉 <strong>${ok} insérés</strong>${fail?` · ${fail} erreurs`:''}. Dashboard mis à jour en temps réel.`);
+  } catch(e){
+    if(thinking.parentNode)thinking.remove();
+    addLog('err',`❌ ${e.message}`);
+  }
+  document.getElementById('agentInput').value='';
+  reset();
+}
+function reset(){agentRunning=false;const btn=document.getElementById('btnGo');btn.disabled=false;btn.textContent='⚡ Lancer';setDot('ready');}
+
+// ── MODAL MANUEL ─────────────────────────────────────────────
+function openModal(){document.getElementById('modalOverlay').classList.add('open');document.getElementById('formMsg').innerHTML='';}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+async function submitForm(){
+  const name=document.getElementById('f_name').value.trim(),url=document.getElementById('f_url').value.trim(),desc=document.getElementById('f_desc').value.trim();
+  if(!name||!url||!desc){document.getElementById('formMsg').innerHTML='<div class="msg err">Nom, URL et description obligatoires.</div>';return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='…';
+  try{
+    await sbInsert({name,url,description:desc,type:document.getElementById('f_type').value||null,country:document.getElementById('f_country').value.trim()||null,languages:document.getElementById('f_languages').value.split(/[,;]/).map(x=>x.trim()).filter(Boolean),status:document.getElementById('f_status').value,theme:document.getElementById('f_theme').value.trim()||null,notes:document.getElementById('f_notes').value.trim()||null,orientation:null});
+    document.getElementById('formMsg').innerHTML='<div class="msg ok">✓ Ajouté !</div>';
+    setTimeout(()=>{closeModal();loadData();},1000);
+  }catch(e){document.getElementById('formMsg').innerHTML=`<div class="msg err">❌ ${e.message}</div>`;btn.disabled=false;btn.textContent='Ajouter';}
+}
+</script>
+</body>
+</html>

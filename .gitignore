@@ -28,3 +28,6 @@ Thumbs.db
 # Node
 node_modules/
 *.tgz
+
+# API keys
+assets/agent-config.js

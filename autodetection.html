@@ -233,9 +233,9 @@
 <!-- ============ API KEY OVERLAY ============ -->
 <div id="api-key-overlay">
   <div class="api-key-box">
-    <h2>🔑 Clé API Anthropic</h2>
-    <p>Entrez votre clé API. Elle sera stockée dans votre navigateur (localStorage) et ne sera jamais envoyée ailleurs qu'à l'API Anthropic.</p>
-    <input type="password" id="api-key-input" placeholder="sk-ant-...">
+    <h2>🔑 Clé API Google Gemini</h2>
+    <p>Entrez votre clé API Gemini (gratuite sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">aistudio.google.com</a>). Elle sera stockée dans votre navigateur (localStorage) et ne sera jamais envoyée ailleurs qu'à l'API Google Gemini.</p>
+    <input type="password" id="api-key-input" placeholder="AIza...">
     <div class="api-key-btns">
       <button class="ak-save" onclick="saveApiKey()">Enregistrer</button>
       <button class="ak-skip" onclick="skipApiKey()">Plus tard</button>
@@ -270,7 +270,7 @@
           <div class="agent-title-wrap">
             <div class="agent-status-dot" id="agentDot"></div>
             <span class="agent-label">Agent IA</span>
-            <span class="agent-powered">· Claude</span>
+            <span class="agent-powered">· Gemini</span>
           </div>
           <span class="criteria-toggle" onclick="toggleCriteria()">voir critères</span>
         </div>
@@ -378,10 +378,10 @@
    ═══════════════════════════════════════════════ */
 const AUTH_PASSWORD="automedia2026";
 const AUTH_STORAGE_KEY="autodetection_auth";
-const API_KEY_STORAGE="autodetection_anthropic_key";
+const API_KEY_STORAGE="autodetection_gemini_key";
 
 function getApiKey(){
-  if(typeof ANTHROPIC_API_KEY!=="undefined"&&ANTHROPIC_API_KEY&&ANTHROPIC_API_KEY!=="REMPLACER_PAR_LA_CLÉ"&&ANTHROPIC_API_KEY!=="")return ANTHROPIC_API_KEY;
+  if(typeof GEMINI_API_KEY!=="undefined"&&GEMINI_API_KEY&&GEMINI_API_KEY!=="REMPLACER_PAR_LA_CLÉ"&&GEMINI_API_KEY!=="")return GEMINI_API_KEY;
   return localStorage.getItem(API_KEY_STORAGE)||"";
 }
 
@@ -592,33 +592,31 @@ async function runAgent() {
   const inp=document.getElementById('agentInput').value.trim();
   if(!inp||agentRunning)return;
   const key=getApiKey();
-  if(!key){addLog('err','❌ Aucune clé API configurée. Cliquez sur 🔑 Clé pour en ajouter une.');return;}
+  if(!key){addLog('err','❌ Aucune clé API Gemini configurée. Cliquez sur 🔑 Clé pour en ajouter une (gratuit sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a>).');return;}
   agentRunning=true;
   const btn=document.getElementById('btnGo');btn.disabled=true;btn.textContent='En cours…';
   setDot('working');
   addLog('user',`<strong>Thème :</strong> ${inp}`);
-  const thinking=addLog('think','<span class="mini-spin"></span> Recherche en cours (web search activée)…');
+  const thinking=addLog('think','<span class="mini-spin"></span> Recherche en cours (Google Search activée)…');
   try {
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
+    const geminiUrl="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    const res=await fetch(geminiUrl,{
       method:'POST',
-      headers:{
-        "Content-Type":"application/json",
-        "x-api-key":key,
-        "anthropic-version":"2023-06-01",
-        "anthropic-dangerous-direct-browser-access":"true"
-      },
+      headers:{"Content-Type":"application/json","x-goog-api-key":key},
       body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",max_tokens:4000,
-        system:SYSTEM_PROMPT,
-        tools:[{type:"web_search_20250305",name:"web_search"}],
-        messages:[{role:"user",content:`Recherche des automédias sur : ${inp}`}]
+        systemInstruction:{parts:[{text:SYSTEM_PROMPT}]},
+        contents:[{role:"user",parts:[{text:`Recherche des automédias sur : ${inp}`}]}],
+        tools:[{google_search:{}}],
+        generationConfig:{maxOutputTokens:4000,temperature:0.2}
       })
     });
     thinking.remove();
-    if(!res.ok){const e=await res.json().catch(()=>({}));addLog('err',`❌ Erreur API : ${e.error?.message||res.status}`);reset();return;}
+    if(!res.ok){const e=await res.json().catch(()=>({}));addLog('err',`❌ Erreur API : ${e.error?.message||e.error?.status||res.status}`);reset();return;}
     const data=await res.json();
     let raw='';
-    for(const b of data.content){if(b.type==='text')raw+=b.text;}
+    if(data.candidates&&data.candidates[0]&&data.candidates[0].content){
+      for(const p of data.candidates[0].content.parts){if(p.text)raw+=p.text;}
+    }
     const clean=raw.replace(/```json|```/gi,'').trim();
     let parsed;
     try{parsed=JSON.parse(clean);}catch(e){const m=clean.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('Réponse non parseable');}
